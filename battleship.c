@@ -65,14 +65,14 @@ void manualShips(cell board[][COLS], ShipType ship[NUM_OF_SHIPS]) {
 }
 
 bool checkShipPlacement(cell board[][COLS], coordinates beginning, int length, int direction) {
-    if(direction == HORIZONTAL && beginning.column + length > COLS) return TRUE;
-    else if(direction == VERTICAL && beginning.row + length > ROWS) return TRUE;
+    if(direction == HORIZONTAL && beginning.column + length > COLS) return FALSE;
+    else if(direction == VERTICAL && beginning.row + length > ROWS) return FALSE;
 
     for(int i = 0; i < length; i++) {
         if(direction == HORIZONTAL)
-            if(board[beginning.row][beginning.column + i].symbol != WATER && beginning.column + i < COLS) return TRUE;
+            if(board[beginning.row][beginning.column + i].symbol != WATER || beginning.column + i < COLS) return FALSE;
         else
-            if(board[beginning.row + i][beginning.column].symbol != WATER && beginning.row + i < ROWS) return TRUE;
+            if(board[beginning.row + i][beginning.column].symbol != WATER || beginning.row + i < ROWS) return FALSE;
     }
     return FALSE;
 }
@@ -93,7 +93,7 @@ bool checkShipPlacement(cell board[][COLS], coordinates beginning, int length, i
 		default:
 			break;
 	}
-}
+}*/
 
 coordinates getTarget() {
     coordinates target;
@@ -107,16 +107,22 @@ coordinates getTarget() {
     	scanf ("%2s", temp);
         temp[0] = toupper(temp[0]) - 'A';
         if(temp[0] < 0 || temp[0] > 9)  {
-            system("cls");
+            //system("cls");
+			system ("clear"); //zbog Linux-a
             continue;
         }
+		if (atio(temp[1]) <0 || atoi(temp[1] > 9){
+			system("clear"); //zbog linux-a
+			continue;
+		}
         target.row = temp[0];
         target.column = temp[1] - '0';
         break;
     } while(TRUE);
-	return target;
+	return target; // why?
 }
 
+/*
 short checkShot (cell gameBoard[][COLS], coordinates target) {
 	int hit = -2;
 
@@ -139,3 +145,16 @@ short checkShot (cell gameBoard[][COLS], coordinates target) {
 
 	return hit;
 }*/
+
+void mainMenu(){
+	printf("\t\tBATTLESHIP\n\n1) Dva igraca\n2) Protiv racunara\n\nUnesite broj opcije: ");
+}
+
+int putShipManually(){
+	int i;
+	for (i = 0;i < NUM_OF_SHIPS; i++){
+		for (j = 0;j < ship[i].ships; j++){
+			printf("Enter direction of ")
+		}
+	}
+}
