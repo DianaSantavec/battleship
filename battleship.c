@@ -65,14 +65,15 @@ void manualShips(cell board[][COLS], ShipType ship[NUM_OF_SHIPS]) {
 }
 
 bool checkShipPlacement(cell board[][COLS], coordinates beginning, int length, int direction) {
-    if(direction == HORIZONTAL && beginning.column + length > COLS) return FALSE;
-    else if(direction == VERTICAL && beginning.row + length > ROWS) return FALSE;
+    if(direction == HORIZONTAL && beginning.column + length > COLS) return TRUE;
+    else if(direction == VERTICAL && beginning.row + length > ROWS) return TRUE;
 
     for(int i = 0; i < length; i++) {
-        if(direction == HORIZONTAL)
-            if(board[beginning.row][beginning.column + i].symbol != WATER || beginning.column + i < COLS) return FALSE;
-        else
-            if(board[beginning.row + i][beginning.column].symbol != WATER || beginning.row + i < ROWS) return FALSE;
+        if(direction == HORIZONTAL) {
+            if(board[beginning.row][beginning.column + i].symbol != WATER) return TRUE;
+        } else {
+            if(board[beginning.row + i][beginning.column].symbol != WATER) return TRUE;
+		}
     }
     return FALSE;
 }
@@ -90,7 +91,7 @@ bool checkShipPlacement(cell board[][COLS], coordinates beginning, int length, i
 			break;
 		case HIT:
 		case MISS:
-		default:
+		default:``
 			break;
 	}
 }*/
@@ -107,19 +108,14 @@ coordinates getTarget() {
     	scanf ("%2s", temp);
         temp[0] = toupper(temp[0]) - 'A';
         if(temp[0] < 0 || temp[0] > 9)  {
-            //system("cls");
-			system ("clear"); //zbog Linux-a
+            system("cls");
             continue;
         }
-		if (atio(temp[1]) <0 || atoi(temp[1] > 9){
-			system("clear"); //zbog linux-a
-			continue;
-		}
         target.row = temp[0];
         target.column = temp[1] - '0';
         break;
     } while(TRUE);
-	return target; // why?
+	return target;
 }
 
 /*
@@ -150,11 +146,11 @@ void mainMenu(){
 	printf("\t\tBATTLESHIP\n\n1) Dva igraca\n2) Protiv racunara\n\nUnesite broj opcije: ");
 }
 
-int putShipManually(){
-	int i;
+/*int putShipManually(){
+	int i, j;
 	for (i = 0;i < NUM_OF_SHIPS; i++){
 		for (j = 0;j < ship[i].ships; j++){
 			printf("Enter direction of ")
 		}
 	}
-}
+}*/
