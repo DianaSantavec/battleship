@@ -13,6 +13,9 @@ int main() {
     cell boardOne[ROWS][COLS],  // Stores player 1 board
          boardTwo[ROWS][COLS];  // Stores player 2 board
 
+    coordinates target;
+    int shot_checker;
+
     int game_mode,  // Stores mode of the game (0 or 1)
         temp;       // Stores temporary values
 
@@ -59,14 +62,41 @@ int main() {
     int player = rand() % 2;
 
     while(TRUE) {
-        if(player) {
-            // If player one playing
-        } else {
-            if(game_mode) {
-                // else if player two is playing
-            } else {
-                // else computer playing
+        system("cls");
+        if(player == PLAYER1) {
+            do {
+                system("cls");
+                printf("Player 1's turn:\n");
+                printBoard(boardTwo, FALSE);
+                target = inputCoordinate();
+                shot_checker = checkShot(boardTwo, target);
+            } while(shot_checker == -1);
+            updateBoard(boardTwo, target);
+        } else if(player == PLAYER2) {
+            if(game_mode == PLAYER_V_PLAYER) {
+                do {
+                    system("cls");
+                    printf("Player 2's turn:\n");
+                    printBoard(boardOne, FALSE);
+                    target = inputCoordinate();
+                    shot_checker = checkShot(boardOne, target);
+                } while(shot_checker == -1);
+                updateBoard(boardOne, target);
+            } else if(game_mode == PLAYER_VS_COOP) {
+                system("cls");
+                printf("Computer's turn:\n");
+                fflush(stdin);
+                getchar();
             }
+        }
+        if(!shot_checker) {
+            system("cls");
+            printf("Player %d's board:\n", player + 1);
+            if(player == PLAYER1) printBoard(boardOne, TRUE);
+            else if(player == PLAYER2) printBoard(boardTwo, TRUE);
+            player = !player;
+            fflush(stdin);
+            getchar();
         }
     }
 }
