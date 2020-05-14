@@ -16,10 +16,10 @@ void printBoard (cell gameBoard [][COLS], bool showPegs) {
 	printf ("  0 1 2 3 4 5 6 7 8 9\n");
 
 	for (i = 0; i < ROWS; i++) {
-		printf ("%d ", i);
+		printf ("%c ", i + 'A');
 
 		for (j = 0; j < COLS; j++) {
-			if (showPegs == TRUE)
+			/*if (showPegs == TRUE)
 				printf ("%c ", gameBoard [i][j].symbol);
 			else {
 				switch (gameBoard [i][j].symbol) {
@@ -28,6 +28,19 @@ void printBoard (cell gameBoard [][COLS], bool showPegs) {
 					case WATER:
 					default:    printf ("%c ", WATER); break;
 				}
+			}*/
+			switch(gameBoard[i][j].symbol) {
+				case HIT:
+				case MISS:
+				case WATER:
+					printf("%c ", gameBoard[i][j].symbol);
+					break;
+				default:
+					if(showPegs)
+						printf("%c ", gameBoard[i][j].symbol);
+					else
+						printf("%c ", WATER);
+					break;
 			}
 		}
 
@@ -55,13 +68,28 @@ void randomizeShips(cell board[][COLS], ShipType ship[NUM_OF_SHIPS]) {
                 direction = rand() % 2;
             } while(checkShipPlacement(board, beginning, ship[i].length, direction));
             putShipOnBoard(board, beginning, direction, ship[i]);
-            printBoard(board, TRUE);
         }
     }
 }
 
 void manualShips(cell board[][COLS], ShipType ship[NUM_OF_SHIPS]) {
-
+	coordinates beginning;
+	int direction;
+	for(int i = 0; i < NUM_OF_SHIPS; i++) {
+		for(int j = 0; j < ship[i].ships; j++) {
+			system("cls");
+			printBoard(board, TRUE);
+			do {
+				beginning = inputCoordinate();
+				printf("> Enter direction:\n");
+				printf("> [1] Horizontal\n");
+				printf("> [2] Vertical\n");
+				printf("> ");
+				scanf("%d", &direction);
+			} while(checkShipPlacement(board, beginning, ship[i].length, --direction));
+			putShipOnBoard(board, beginning, direction, ship[i]);
+		}
+	}
 }
 
 bool checkShipPlacement(cell board[][COLS], coordinates beginning, int length, int direction) {
@@ -78,7 +106,7 @@ bool checkShipPlacement(cell board[][COLS], coordinates beginning, int length, i
     return FALSE;
 }
 
-/*void updateBoard (cell board[][COLS], coordinates target) {
+void updateBoard (cell board[][COLS], coordinates target) {
 	switch (board[target.row][target.column].symbol) {
 		case WATER:
 			board[target.row][target.column].symbol = MISS;
@@ -91,37 +119,34 @@ bool checkShipPlacement(cell board[][COLS], coordinates beginning, int length, i
 			break;
 		case HIT:
 		case MISS:
-		default:``
+		default:
 			break;
 	}
-}*/
+}
 
-coordinates getTarget() {
-    coordinates target;
+coordinates inputCoordinate() {
+    coordinates input;
 	char temp[3];
     temp[0] = 0;
     do {
         if(temp[0]) printf("> Try again\n");
     	fflush (stdin);
-    	printf ("> Enter target field(ex. A8):\n");
+    	printf ("> Enter field(ex. A8):\n");
     	printf ("> ");
     	scanf ("%2s", temp);
         temp[0] = toupper(temp[0]) - 'A';
-        if(temp[0] < 0 || temp[0] > 9)  {
-            system("cls");
-            continue;
-        }
-        target.row = temp[0];
-        target.column = temp[1] - '0';
+        if(temp[0] < 0 || temp[0] > 9) continue;
+        temp[1] = temp[1] - '0';
+		if(temp[1] < 0 || temp[1] > 9) continue;
+		input.row = temp[0];
+		input.column = temp[1];
         break;
     } while(TRUE);
-	return target;
+	return input;
 }
 
-/*
-short checkShot (cell gameBoard[][COLS], coordinates target) {
+int checkShot (cell gameBoard[][COLS], coordinates target) {
 	int hit = -2;
-
 	switch (gameBoard[target.row][target.column].symbol) {
 		case WATER:
 			hit = 0;
@@ -138,9 +163,8 @@ short checkShot (cell gameBoard[][COLS], coordinates target) {
 			hit = -1;
 			break;
 	}
-
 	return hit;
-}*/
+}
 
 void mainMenu(){
 	printf("\t\tBATTLESHIP\n\n1) Dva igraca\n2) Protiv racunara\n\nUnesite broj opcije: ");

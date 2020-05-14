@@ -6,6 +6,9 @@
 #include <time.h>
 #include <ctype.h>
 
+#define PLAYER_VS_COOP  0
+#define PLAYER_V_PLAYER 1
+
 #define PLAYER1         0
 #define PLAYER2         1
 
@@ -50,10 +53,11 @@ void printBoard(cell board[][COLS], bool);
 void initializeBoard(cell board[][COLS]);
 void putShipOnBoard(cell boardoard[][COLS], coordinates, int, ShipType);
 void randomizeShips(cell board[][COLS], ShipType ship[NUM_OF_SHIPS]);
-//void manualShips(cell board[][COLS], ShipType ship[NUM_OF_SHIPS]);
+void manualShips(cell board[][COLS], ShipType ship[NUM_OF_SHIPS]);
 
 bool checkShipPlacement(cell board[][COLS], coordinates, int, int);
-//coordinates getTarget();
+coordinates inputCoordinate();
+int checkShot(cell board[][COLS], coordinates);
 
 
 #endif
