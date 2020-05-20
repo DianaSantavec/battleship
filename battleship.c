@@ -178,3 +178,18 @@ void mainMenu(){
 		}
 	}
 }*/
+
+coordinates randomShot(cell playersBoard[][COLS]){
+	
+	srand(time(NULL));
+	coordinates try;
+	int shootChecker;
+
+	do{
+		try.row = rand() % 10;
+		try.column = rand() % 10;
+		shootChecker = checkShot(playersBoard,try);
+		}
+		while(shootChecker == -1);
+	return try;
+}

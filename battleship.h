@@ -59,5 +59,7 @@ bool checkShipPlacement(cell board[][COLS], coordinates, int, int);
 coordinates inputCoordinate();
 int checkShot(cell board[][COLS], coordinates);
 
+coordinates randomShot(cell playersBoard[][COLS]);
+
 
 #endif
