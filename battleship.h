@@ -60,6 +60,7 @@ coordinates inputCoordinate();
 int checkShot(cell board[][COLS], coordinates);
 
 coordinates randomShot(cell playersBoard[][COLS]);
+int tryEveryDirection(cell playersBoard[][COLS], coordinates *target, int *number_of_tested_shots);
 
 
 #endif
