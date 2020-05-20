@@ -77,8 +77,7 @@ void manualShips(cell board[][COLS], ShipType ship[NUM_OF_SHIPS]) {
 	int direction;
 	for(int i = 0; i < NUM_OF_SHIPS; i++) {
 		for(int j = 0; j < ship[i].ships; j++) {
-			//system("cls");
-			system("clear");
+			CLEAR;
 			printBoard(board, TRUE);
 			do {
 				beginning = inputCoordinate();
@@ -201,24 +200,24 @@ int tryEveryDirection(cell playersBoard[][COLS], coordinates *target, int *numbe
 	target->column +=1;
 	shot_checker = checkShot(playersBoard, *target);
 	
-	if (shot_checker == -1 && number_of_tested_shots == 0){
+	if (shot_checker == -1 && *number_of_tested_shots == 0){
 		target->column -=2;
 		shot_checker = checkShot(playersBoard, *target);
 		*number_of_tested_shots += 1;
 
 		
-		if (shot_checker == -1 && number_of_tested_shots == 1){
+		if (shot_checker == -1 && *number_of_tested_shots == 1){
 			target->column +=1;
 			target->row +=1;
 			shot_checker = checkShot(playersBoard, *target);
 			*number_of_tested_shots += 1;
 
-			if (shot_checker == -1 && number_of_tested_shots == 2){
+			if (shot_checker == -1 && *number_of_tested_shots == 2){
 				target->row -=2;
 				shot_checker = checkShot(playersBoard, *target);
 				*number_of_tested_shots += 1;
 
-				if (shot_checker == -1 && number_of_tested_shots == 3){
+				if (shot_checker == -1 && *number_of_tested_shots == 3){
 					*target = randomShot(playersBoard);
 					shot_checker = checkShot(playersBoard, *target);
 					*number_of_tested_shots = 0;

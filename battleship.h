@@ -1,3 +1,9 @@
+#ifdef __linux__
+    #define CLEAR system("clear")
+#else
+    #define CLEAR system("cls")
+#endif
+
 #ifndef _BATTLESHIP_H_
 #define _BATTLESHIP_H_
 

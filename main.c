@@ -27,8 +27,7 @@ int main() {
 
     // PICK GAME MODE BETWEEN PLAYER VS COMPUTER AND PLAYER VS PLAYER
 
-    //system("cls");
-    system("clear");
+    CLEAR;
     printf("> [1] Player vs CO-OP\n");
     printf("> [2] Player vs Player\n");
     do {
@@ -39,7 +38,7 @@ int main() {
 
     //Placing ships
     //system("cls");
-    system("clear");
+    CLEAR;
     printf("> Player 1 places ships:\n");
     printf("> [1] Manually\n");
     printf("> [2] Randomly\n");
@@ -52,7 +51,7 @@ int main() {
 
     if(game_mode) {
         //system("cls");
-        system("clear");
+        CLEAR;
         printf("> Player 2 places ships:\n");
         printf("> [1] Manually\n");
         printf("> [2] Randomly\n");
@@ -72,13 +71,11 @@ int main() {
 
     //Starting game
     while(TRUE) {
-        //system("cls");
-        system("clear");
+        CLEAR;
 
         if(player == PLAYER1) {
             do {
-                //system("cls");
-                system("clear");
+                CLEAR;
                 printf("Player 1's turn:\n");
                 printBoard(boardTwo, FALSE);
                 target = inputCoordinate();
@@ -90,8 +87,7 @@ int main() {
         else if(player == PLAYER2) {
             if(game_mode == PLAYER_V_PLAYER) {
                 do {
-                    //system("cls");
-                    system("clear");
+                    CLEAR;
                     printf("Player 2's turn:\n");
                     printBoard(boardOne, FALSE);
                     target = inputCoordinate();
@@ -102,7 +98,7 @@ int main() {
             
             else if(game_mode == PLAYER_VS_COOP) {
 
-                system("clear");
+                CLEAR;
                 printf("Computers trurn:\n");
                 
                 if (last_target.row == -1){ //if last shot was a miss do a random shot
@@ -138,7 +134,7 @@ int main() {
         // If player hited a boat, he will have one more chance to shoot
         if(!shot_checker) {
             //system("cls");
-            system("clear");
+            CLEAR;
             printf("Player %d's board:\n", player + 1);
             fflush(stdin);
             getchar();      //because of some magical reason, without this program deletes table before user input character for PLAYER1 (butit requests two characters for PLAYER2 - as expected)
