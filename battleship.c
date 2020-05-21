@@ -1,70 +1,118 @@
 #include "battleship.h"
 
+/*
+ * Iterates through all board cells and initializes it's symbol and coordinates
+ * Parameters:
+ *     board - matrix of cells
+ */
+
 void initializeBoard(cell board[][COLS]) {
+	// Loop through all rows
 	for (int i = 0; i < ROWS; i++) {
+		// Loop through all columns
 		for (int j = 0; j < COLS; j++) {
-			board[i][j].symbol          = WATER;
-			board[i][j].position.row    = i;
-			board[i][j].position.column = j;
+			// Initialize cell
+			board[i][j].symbol		= WATER;
+			board[i][j].position.x	= i;
+			board[i][j].position.y	= j;
 		}
     }
 }
 
 void printBoard (cell gameBoard [][COLS], bool showPegs) {
-	int i = 0, j = 0;
+	/* -------------------------------------------------------------------------- */
+    printf("%7c", 201);
+    for(int i = 0; i < COLS * 2 - 1; i++) {
+        if(i % 2) printf("%c", 203);
+        else printf("%c%c%c", 205, 205, 205);
+    }
+    printf("%c\n", 187);
 
-	printf ("  0 1 2 3 4 5 6 7 8 9\n");
+    printf("%7c", 186);
+    for(int i = 0; i < COLS * 2 - 1; i++) {
+        if(i % 2) printf("%c", 186);
+        else printf("%2d ", (i + 1) / 2);
+    }
+    printf("%c\n", 186);
 
-	for (i = 0; i < ROWS; i++) {
-		printf ("%c ", i + 'A');
+    printf("%7c", 200);
+    for(int i = 0; i < COLS * 2 - 1; i++) {
+        if(i % 2) printf("%c", 202);
+        else printf("%c%c%c", 205, 205, 205);
+    }
+    printf("%c\n", 188);
+    /* -------------------------------------------------------------------------- */
 
-		for (j = 0; j < COLS; j++) {
-			/*if (showPegs == TRUE)
-				printf ("%c ", gameBoard [i][j].symbol);
-			else {
-				switch (gameBoard [i][j].symbol) {
-					case HIT:   printf ("%c ", HIT);   break;
-					case MISS:  printf ("%c ", MISS);  break;
-					case WATER:
-					default:    printf ("%c ", WATER); break;
+    printf("%c%c%c%c%c ", 201, 205, 205, 205, 187);
+
+    printf("%c", 201);
+    for(int i = 0; i < COLS * 2 - 1; i++) {
+        if(i % 2) printf("%c", 209);
+        else printf("%c%c%c", 205, 205, 205);
+    }
+    printf("%c\n", 187);
+
+    for(int i = 0; i < ROWS * 2 - 1; i++) {
+        if(i % 2) {
+            printf("%c%c%c%c%c ", 204, 205, 205, 205, 185);
+
+            printf("%c", 199);
+            for(int j = 0; j < COLS * 2 - 1; j++)
+                if(j % 2) printf("%c", 197);
+				else printf("%c%c%c", 196, 196, 196);
+            printf("%c\n", 182);
+        } else {
+            printf("%c %c %c ", 186, (i + 1) / 2 + 'A', 186);
+
+            printf("%c", 186);
+            for(int j = 0; j < COLS * 2 - 1; j++)
+                if(j % 2) printf("%c", 179);
+				else {
+					switch(gameBoard[i][j].symbol) {
+						case HIT:
+						case MISS:
+						case WATER:
+							printf(" %c ", gameBoard[i][j].symbol);
+							break;
+						default:
+							if(showPegs)
+								printf(" %c ", gameBoard[i][j].symbol);
+							else
+								printf(" %c ", WATER);
+							break;
+					}
 				}
-			}*/
-			switch(gameBoard[i][j].symbol) {
-				case HIT:
-				case MISS:
-				case WATER:
-					printf("%c ", gameBoard[i][j].symbol);
-					break;
-				default:
-					if(showPegs)
-						printf("%c ", gameBoard[i][j].symbol);
-					else
-						printf("%c ", WATER);
-					break;
-			}
-		}
+            printf("%c\n", 186);
+        }
+    }
 
-		putchar ('\n');
-	}
+    printf("%c%c%c%c%c ", 200, 205, 205, 205, 188);
+
+    printf("%c", 200);
+    for(int i = 0; i < COLS * 2 - 1; i++) {
+        if(i % 2) printf("%c", 207);
+        else printf("%c%c%c", 205, 205, 205);
+    }
+    printf("%c\n", 188);
 }
 
 void putShipOnBoard(cell board[][COLS], coordinates beginning, int direction, ShipType ship) {
     for(int i = 0; i < ship.length; i++) {
         if(direction == HORIZONTAL)
-            board[beginning.row][beginning.column + i].symbol = ship.symbol;
+            board[beginning.x][beginning.y + i].symbol = ship.symbol;
         else
-            board[beginning.row + i][beginning.column].symbol = ship.symbol;
+            board[beginning.x + i][beginning.y].symbol = ship.symbol;
     }
 }
 
-void randomizeShips(cell board[][COLS], ShipType ship[NUM_OF_SHIPS]) {
+void randomShips(cell board[][COLS], ShipType ship[NUM_OF_SHIPS]) {
     coordinates beginning;
     int direction;
     for(int i = 0; i < NUM_OF_SHIPS; i++) {
         for(int j = 0; j < ship[i].ships; j++) {
             do {
-                beginning.row = rand() % 10;
-                beginning.column = rand() % 10;
+                beginning.x = rand() % 10;
+                beginning.y = rand() % 10;
                 direction = rand() % 2;
             } while(checkShipPlacement(board, beginning, ship[i].length, direction));
             putShipOnBoard(board, beginning, direction, ship[i]);
@@ -77,8 +125,8 @@ void manualShips(cell board[][COLS], ShipType ship[NUM_OF_SHIPS]) {
 	int direction;
 	for(int i = 0; i < NUM_OF_SHIPS; i++) {
 		for(int j = 0; j < ship[i].ships; j++) {
-			CLEAR;
-			printBoard(board, TRUE);
+			system(CLEAR);
+			printBoard(board, true);
 			do {
 				beginning = inputCoordinate();
 				printf("> Enter direction:\n");
@@ -93,29 +141,29 @@ void manualShips(cell board[][COLS], ShipType ship[NUM_OF_SHIPS]) {
 }
 
 bool checkShipPlacement(cell board[][COLS], coordinates beginning, int length, int direction) {
-    if(direction == HORIZONTAL && beginning.column + length > COLS) return TRUE;
-    else if(direction == VERTICAL && beginning.row + length > ROWS) return TRUE;
+    if(direction == HORIZONTAL && beginning.y + length > COLS) return true;
+    else if(direction == VERTICAL && beginning.x + length > ROWS) return true;
 
     for(int i = 0; i < length; i++) {
         if(direction == HORIZONTAL) {
-            if(board[beginning.row][beginning.column + i].symbol != WATER) return TRUE;
+            if(board[beginning.x][beginning.y + i].symbol != WATER) return true;
         } else {
-            if(board[beginning.row + i][beginning.column].symbol != WATER) return TRUE;
+            if(board[beginning.x + i][beginning.y].symbol != WATER) return true;
 		}
     }
-    return FALSE;
+    return false;
 }
 
 void updateBoard (cell board[][COLS], coordinates target) {
-	switch (board[target.row][target.column].symbol) {
+	switch (board[target.x][target.y].symbol) {
 		case WATER:
-			board[target.row][target.column].symbol = MISS;
+			board[target.x][target.y].symbol = MISS;
 			break;
 		case NOSAC_AVIONA:
 		case KRSTARICA:
 		case RAZARAC:
 		case PODMORNICA:
-			board[target.row][target.column].symbol = HIT;
+			board[target.x][target.y].symbol = HIT;
 			break;
 		case HIT:
 		case MISS:
@@ -138,16 +186,16 @@ coordinates inputCoordinate() {
         if(temp[0] < 0 || temp[0] > 9) continue;
         temp[1] = temp[1] - '0';
 		if(temp[1] < 0 || temp[1] > 9) continue;
-		input.row = temp[0];
-		input.column = temp[1];
+		input.x = temp[0];
+		input.y = temp[1];
         break;
-    } while(TRUE);
+    } while(true);
 	return input;
 }
 
 int checkShot (cell gameBoard[][COLS], coordinates target) {
 	int hit = -2;
-	switch (gameBoard[target.row][target.column].symbol) {
+	switch (gameBoard[target.x][target.y].symbol) {
 		case WATER:
 			hit = 0;
 			break;
@@ -170,56 +218,35 @@ void mainMenu(){
 	printf("\t\tBATTLESHIP\n\n1) Dva igraca\n2) Protiv racunara\n\nUnesite broj opcije: ");
 }
 
-/*int putShipManually(){
-	int i, j;
-	for (i = 0;i < NUM_OF_SHIPS; i++){
-		for (j = 0;j < ship[i].ships; j++){
-			printf("Enter direction of ")
-		}
-	}
-}*/
-
-coordinates randomShot(cell playersBoard[][COLS]){
-	
-	srand(time(NULL));
-	coordinates try;
-	int shootChecker;
-
-	do{
-		try.row = rand() % 10;
-		try.column = rand() % 10;
-		shootChecker = checkShot(playersBoard,try);
-		}
-		while(shootChecker == -1);
-	return try;
-}
-
 int tryEveryDirection(cell playersBoard[][COLS], coordinates *target, int *number_of_tested_shots){
 	int shot_checker;
 
-	target->column +=1;
+	target->y +=1;
 	shot_checker = checkShot(playersBoard, *target);
-	
+
 	if (shot_checker == -1 && *number_of_tested_shots == 0){
-		target->column -=2;
+		target->y -=2;
 		shot_checker = checkShot(playersBoard, *target);
 		*number_of_tested_shots += 1;
 
-		
+
 		if (shot_checker == -1 && *number_of_tested_shots == 1){
-			target->column +=1;
-			target->row +=1;
+			target->y +=1;
+			target->x +=1;
 			shot_checker = checkShot(playersBoard, *target);
 			*number_of_tested_shots += 1;
 
 			if (shot_checker == -1 && *number_of_tested_shots == 2){
-				target->row -=2;
+				target->x -=2;
 				shot_checker = checkShot(playersBoard, *target);
 				*number_of_tested_shots += 1;
 
 				if (shot_checker == -1 && *number_of_tested_shots == 3){
-					*target = randomShot(playersBoard);
-					shot_checker = checkShot(playersBoard, *target);
+					do {
+                		target->x = rand() % 10;
+                		target->y = rand() % 10;
+                		shot_checker = checkShot(playersBoard, *target);
+                	} while(shot_checker == -1);
 					*number_of_tested_shots = 0;
 				}
 			}
