@@ -21,52 +21,70 @@ void initializeBoard(cell board[][COLS]) {
 
 void printBoard (cell gameBoard [][COLS], bool showPegs) {
 	/* -------------------------------------------------------------------------- */
-    printf("%7c", 201);
+    printf("     ");
+	printf(SYMBOL_UPPER_LEFT_EDGE);
     for(int i = 0; i < COLS * 2 - 1; i++) {
-        if(i % 2) printf("%c", 203);
-        else printf("%c%c%c", 205, 205, 205);
+        if(i % 2) printf(UPPER_BORDER_T);
+        else printf(HORIZONTAL_LINE);
     }
-    printf("%c\n", 187);
+    printf(SYMBOL_UPPER_RIGHT_EDGE);
+	printf("\n");
 
-    printf("%7c", 186);
+	//printf("%7c", 186);
+	//printf("       ");
+	printf("     ");
+	printf(SINGLE_VERTICAL_LINE);
     for(int i = 0; i < COLS * 2 - 1; i++) {
-        if(i % 2) printf("%c", 186);
+        if(i % 2) printf(SINGLE_VERTICAL_LINE);
         else printf("%2d ", (i + 1) / 2);
     }
-    printf("%c\n", 186);
+    printf(SINGLE_VERTICAL_LINE);
+	printf("\n");
 
-    printf("%7c", 200);
+    //printf("%7c", 200);
+	printf("     ");
+	printf(SYMBOL_LOWER_LEFT_EDGE);
+
     for(int i = 0; i < COLS * 2 - 1; i++) {
-        if(i % 2) printf("%c", 202);
-        else printf("%c%c%c", 205, 205, 205);
+        if(i % 2) printf(LOWER_BORDER_T);
+        else printf(HORIZONTAL_LINE);
     }
-    printf("%c\n", 188);
+    printf(SYMBOL_LOWER_RIGHT_EDGE);
+	printf("\n");
     /* -------------------------------------------------------------------------- */
 
-    printf("%c%c%c%c%c ", 201, 205, 205, 205, 187);
+	printf(SYMBOL_UPPER_LEFT_EDGE);
+	printf(HORIZONTAL_LINE);
+	printf(SYMBOL_UPPER_RIGHT_EDGE);
 
-    printf("%c", 201);
+    printf(SYMBOL_UPPER_LEFT_EDGE);
     for(int i = 0; i < COLS * 2 - 1; i++) {
-        if(i % 2) printf("%c", 209);
-        else printf("%c%c%c", 205, 205, 205);
+        if(i % 2) printf(SYMBOL_T_SECOND_TYPE);
+        else printf(HORIZONTAL_LINE);
     }
-    printf("%c\n", 187);
+    printf(SYMBOL_UPPER_RIGHT_EDGE);
+	printf("\n");
 
     for(int i = 0; i < ROWS * 2 - 1; i++) {
         if(i % 2) {
-            printf("%c%c%c%c%c ", 204, 205, 205, 205, 185);
+			printf(SYMBOL_T_ROTATED_RIGHT);
+			printf(HORIZONTAL_LINE);
+			printf(SYMBOL_T_ROTATED_LEFT);
 
-            printf("%c", 199);
+            printf(SYMBOL_T_ROTATED_RIGHT_SECOND);
             for(int j = 0; j < COLS * 2 - 1; j++)
-                if(j % 2) printf("%c", 197);
-				else printf("%c%c%c", 196, 196, 196);
-            printf("%c\n", 182);
+                if(j % 2) printf(SYMBOL_CROSS);
+				else printf(HORIZONTAL_LINE_SINGLE);
+            printf(SYMBOL_T_ROTATED_LEFT_SECOND);
+			printf("\n");
         } else {
-            printf("%c %c %c ", 186, (i + 1) / 2 + 'A', 186);
+			printf(SYMBOL_VERTICAL_LINE);
+			printf(" %c ", (i+1)/2 + 'A');
+			printf(SYMBOL_VERTICAL_LINE);
 
-            printf("%c", 186);
+            printf(SYMBOL_VERTICAL_LINE);
             for(int j = 0; j < COLS * 2 - 1; j++)
-                if(j % 2) printf("%c", 179);
+                if(j % 2) printf(SYMBOL_VERTICAL_LINE_SINGLE);
 				else {
 					switch(gameBoard[i][j].symbol) {
 						case HIT:
@@ -82,18 +100,21 @@ void printBoard (cell gameBoard [][COLS], bool showPegs) {
 							break;
 					}
 				}
-            printf("%c\n", 186);
+            printf(SYMBOL_VERTICAL_LINE);
+			printf("\n");
         }
     }
+	printf(SYMBOL_LOWER_LEFT_EDGE);
+	printf(HORIZONTAL_LINE);
+	printf(SYMBOL_LOWER_RIGHT_EDGE);
 
-    printf("%c%c%c%c%c ", 200, 205, 205, 205, 188);
-
-    printf("%c", 200);
+    printf(SYMBOL_LOWER_LEFT_EDGE);
     for(int i = 0; i < COLS * 2 - 1; i++) {
-        if(i % 2) printf("%c", 207);
-        else printf("%c%c%c", 205, 205, 205);
+        if(i % 2) printf(SYMBOL_T_ROTATED_SECOND);
+        else printf(HORIZONTAL_LINE);
     }
-    printf("%c\n", 188);
+    printf(SYMBOL_LOWER_RIGHT_EDGE);
+	printf("\n");
 }
 
 void putShipOnBoard(cell board[][COLS], coordinates beginning, int direction, ShipType ship) {
