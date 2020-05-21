@@ -1,5 +1,4 @@
 #include "battleship.h"
-#include "battleship.c"
 
 int main() {
     srand(time(NULL));
