@@ -1,30 +1,52 @@
-#ifdef __linux__
-    #define CLEAR system("clear")
-#else
-    #define CLEAR system("cls")
-#endif
+/* Define header file */
 
-#ifndef _BATTLESHIP_H_
-#define _BATTLESHIP_H_
+#ifndef BATTLESHIP_H
+#define BATTLESHIP_H
+
+/* Standard libraries */
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
-#include <ctype.h>
+#include <stdbool.h>
 
-#define PLAYER_VS_COOP  0
-#define PLAYER_V_PLAYER 1
+/* Additional libraries */
 
-#define PLAYER1         0
-#define PLAYER2         1
+#include <time.h>       // Used for generating random numbers
+#include <ctype.h>      // Used for user input
 
-#define NUM_OF_SHIPS    4   // Number of ship types
+/* Check if the program is running on Linux or Windows */
 
-#define HORIZONTAL      0
-#define VERTICAL        1
+#ifdef __linux__
+    #define CLEAR "clear"
+#else
+    #define CLEAR "cls"
+#endif
 
-#define ROWS            10
-#define COLS            10
+/* Game modes */
+
+#define PLAYER_VS_COOP  0   // Player vs Computer mode
+#define PLAYER_V_PLAYER 1   // Player vs Player mode
+
+/* Players */
+
+#define PLAYER1         0   // Player one
+#define PLAYER2         1   // Player two
+
+/* Number of different types of ships */
+
+#define NUM_OF_SHIPS    4
+
+/* Used for describing rotation of the ship */
+
+#define HORIZONTAL      0   // From the beginning coordinate to the right
+#define VERTICAL        1   // From the beginning coordinate down
+
+/* Size of the battle field */
+
+#define ROWS            10  // Number of rows
+#define COLS            10  // Number of columns
+
+/* Representation symbols on the board */
 
 #define WATER           '~'
 #define HIT             'X'
@@ -35,20 +57,22 @@
 #define RAZARAC         'R'
 #define PODMORNICA      'P'
 
-typedef enum {
-    FALSE, TRUE
-} bool;
+/* Information about specific ship type */
 
 typedef struct {
-    char symbol;    // Representation of specific type on matrix
-    int length;     // Length of specific type
-    int ships;      // Number of ships of specific type
+    char symbol;    // Representation of specific ship type on board
+    int length;     // Length of specific ship type
+    int ships;      // Number of ships of specific ship type
 } ShipType;
 
+/* Stores coordinates */
+
 typedef struct {
-    int row;
-    int column;
+    int x;
+    int y;
 } coordinates;
+
+/* Stores every cell's current symbol and position on board */
 
 typedef struct {
     char symbol;
@@ -58,15 +82,13 @@ typedef struct {
 void printBoard(cell board[][COLS], bool);
 void initializeBoard(cell board[][COLS]);
 void putShipOnBoard(cell boardoard[][COLS], coordinates, int, ShipType);
-void randomizeShips(cell board[][COLS], ShipType ship[NUM_OF_SHIPS]);
+void randomShips(cell board[][COLS], ShipType ship[NUM_OF_SHIPS]);
 void manualShips(cell board[][COLS], ShipType ship[NUM_OF_SHIPS]);
 
 bool checkShipPlacement(cell board[][COLS], coordinates, int, int);
 coordinates inputCoordinate();
 int checkShot(cell board[][COLS], coordinates);
+void updateBoard (cell board[][COLS], coordinates);
 
-coordinates randomShot(cell playersBoard[][COLS]);
 int tryEveryDirection(cell playersBoard[][COLS], coordinates *target, int *number_of_tested_shots);
-
-
 #endif
