@@ -1,17 +1,8 @@
 #include "battleship.h"
 
-/*
- * Iterates through all board cells and initializes it's symbol and coordinates
- * Parameters:
- *     board - matrix of cells
- */
-
 void initializeBoard(cell board[][COLS]) {
-	// Loop through all rows
 	for (int i = 0; i < ROWS; i++) {
-		// Loop through all columns
 		for (int j = 0; j < COLS; j++) {
-			// Initialize cell
 			board[i][j].symbol		= WATER;
 			board[i][j].position.x	= i;
 			board[i][j].position.y	= j;
@@ -19,11 +10,8 @@ void initializeBoard(cell board[][COLS]) {
     }
 }
 
-
-/* ---NEW----------------------NEW----------------------NEW------------------NEW--------NEW---- */
-void printBoard (cell gameBoard [][COLS], bool showPegs) {
-	/* -------------------------------------------------------------------------- */
-	printf("     "); //instead of %7c
+void printBoard(cell board[][COLS], bool showPegs) {
+	printf("     ");
 	printf(SYMBOL_UPPER_LEFT_EDGE);
     for(int i = 0; i < COLS * 2 - 1; i++) {
         if(i % 2) printf(UPPER_BORDER_T);
@@ -49,7 +37,6 @@ void printBoard (cell gameBoard [][COLS], bool showPegs) {
     }
     printf(SYMBOL_LOWER_RIGHT_EDGE);
 	printf("\n");
-    /* -------------------------------------------------------------------------- */
 
 	printf(SYMBOL_UPPER_LEFT_EDGE);
 	printf(HORIZONTAL_LINE);
@@ -81,23 +68,23 @@ void printBoard (cell gameBoard [][COLS], bool showPegs) {
 			printf(SYMBOL_VERTICAL_LINE);
 
             printf(SYMBOL_VERTICAL_LINE);
-            for(int j = 0; j < COLS * 2 - 1; j++)
+            for(int j = 0; j < COLS * 2 - 1; j++) {
                 if(j % 2) printf(SYMBOL_VERTICAL_LINE_SINGLE);
-				else {
-					switch(gameBoard[i][j].symbol) {
+				else
+					switch(board[(i + 1) / 2][(j + 1) / 2].symbol) {
 						case HIT:
 						case MISS:
 						case WATER:
-							printf(" %c ", gameBoard[i][j].symbol);
+							printf(" %c ", board[(i + 1) / 2][(j + 1) / 2].symbol);
 							break;
 						default:
 							if(showPegs)
-								printf(" %c ", gameBoard[i][j].symbol);
+								printf(" %c ", board[(i + 1) / 2][(j + 1) / 2].symbol);
 							else
 								printf(" %c ", WATER);
 							break;
 					}
-				}
+			}
             printf(SYMBOL_VERTICAL_LINE);
 			printf("\n");
         }
@@ -115,7 +102,6 @@ void printBoard (cell gameBoard [][COLS], bool showPegs) {
 	printf("\n");
 }
 
-/* ---NEW----------------------NEW----------------------NEW------------------NEW--------NEW---- */
 void updateBoard (cell board[][COLS], coordinates target) {
 	switch (board[target.x][target.y].symbol) {
 		case WATER:
