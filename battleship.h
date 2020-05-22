@@ -42,7 +42,7 @@
 #else
     #define CLEAR "cls"
     //extended ascii
-    #define SYMBOL_VERTICAL_LINE_SINGLE "%c",179
+    #define SYMBOL_VERTICAL_LINE_SINGLE "%c", 179
     #define SYMBOL_T_ROTATED_LEFT_SECOND "%c", 182
     #define SYMBOL_T_ROTATED_LEFT "%c", 185
     #define SYMBOL_VERTICAL_LINE "%c", 186
@@ -54,7 +54,7 @@
     #define SYMBOL_T_ROTATED_RIGHT_SECOND "%c", 199
     #define SYMBOL_LOWER_LEFT_EDGE "%c", 200
     #define SYMBOL_UPPER_LEFT_EDGE "%c", 201
-    #define LOWER_BORDER_T "%c", 202 
+    #define LOWER_BORDER_T "%c", 202
     #define UPPER_BORDER_T "%c", 203
     #define HORIZONTAL_LINE "%c%c%c", 205, 205, 205
     #define SYMBOL_T_ROTATED_RIGHT "%c", 204
@@ -85,8 +85,8 @@
 
 /* Size of the battle field */
 
-#define ROWS            10  // Number of rows
-#define COLS            10  // Number of columns
+#define ROWS            10  // Number of rows    (ROWS <= 12)
+#define COLS            10  // Number of columns (COLS <= 58)
 
 /* Representation symbols on the board */
 
@@ -130,7 +130,7 @@ void manualShips(cell board[][COLS], ShipType ship[NUM_OF_SHIPS]);
 bool checkShipPlacement(cell board[][COLS], coordinates, int, int);
 coordinates inputCoordinate();
 int checkShot(cell board[][COLS], coordinates);
-void updateBoard (cell board[][COLS], coordinates);
+void updateCell (cell board[][COLS], coordinates);
 
 int tryEveryDirection(cell playersBoard[][COLS], coordinates *target, int *number_of_tested_shots);
 #endif

@@ -29,8 +29,8 @@ void randomShips(cell board[][COLS], ShipType ship[NUM_OF_SHIPS]) {
     for(int i = 0; i < NUM_OF_SHIPS; i++) {
         for(int j = 0; j < ship[i].ships; j++) {
             do {
-                beginning.x = rand() % 10;
-                beginning.y = rand() % 10;
+                beginning.x = rand() % ROWS;
+                beginning.y = rand() % COLS;
                 direction = rand() % 2;
             } while(checkShipPlacement(board, beginning, ship[i].length, direction));
             putShipOnBoard(board, beginning, direction, ship[i]);
