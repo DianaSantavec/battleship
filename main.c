@@ -1,13 +1,55 @@
+#ifdef _WIN32
+#include "boardLibrary.c"
+#include "computerLogic.c"
+#include "coordinatesFunctions.c"
+#include "shipsFunctions.c"
+#include <Windows.h>
+
+typedef struct Window {
+    SHORT x; // Number of characters displayed horizontally
+    SHORT y; // Number of characters displayed vertically
+} window;
+
+/*
+ * Sets window size on Windows to a given width and height
+ *
+ * Parameters:
+ *     width  - number of characters displayed horizontally
+ *     height - number of characters displayed vertically
+ *
+ * Return (void):
+ *     Nothing
+ */
+
+void setWindowSize(int width, int height) {
+    // Structure in WinConTypes.h (included in Windows.h) that holds buffer size
+    COORD coord = {width, height};
+    // Structure in WinConTypes.h (included in Windows.h) that holds all 4 corners of the window
+    SMALL_RECT rect = {0, 0, width - 1, height - 1};
+    // Security descriptor (included in Windows.h)
+    HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
+    // Functions for setting buffer and window size
+    SetConsoleScreenBufferSize(handle, coord);
+    SetConsoleWindowInfo(handle, TRUE, &rect);
+}
+#endif
+
 #include "battleship.h"
 
 int main() {
+
+#ifdef _WIN32
+    window size = {5 + 4 * COLS + 1, 1 + 2 * (3 + 2 * ROWS + 1) + 3};
+    setWindowSize(size.x, size.y);
+#endif
+
     srand(time(NULL));
 
     ShipType ship[NUM_OF_SHIPS] = {
-        {'N', 4, 1},
-        {'K', 3, 2},
-        {'R', 2, 3},
-        {'P', 1, 4},
+        {NOSAC_AVIONA, 4, 1},
+        {KRSTARICA, 3, 2},
+        {RAZARAC, 2, 3},
+        {PODMORNICA, 1, 4},
     };
     cell boardOne[ROWS][COLS],  // Stores player 1 board
          boardTwo[ROWS][COLS];  // Stores player 2 board
@@ -63,7 +105,7 @@ int main() {
     else randomShips(boardTwo, ship);
 
 
-    //Choosing first player
+    //Choosing first player randomly
     int player = rand() % 2;
 
     //Starting game
@@ -74,11 +116,16 @@ int main() {
             do {
                 system(CLEAR);
                 printf("Player 1's turn:\n");
+                printBoard(boardOne, true);
                 printBoard(boardTwo, false);
                 target = inputCoordinate();
                 shot_checker = checkShot(boardTwo, target);
             } while(shot_checker == -1);
-            updateBoard(boardTwo, target);
+            updateCell(boardTwo, target);
+            system(CLEAR);
+            printf("Player 1's turn:\n");
+            printBoard(boardOne, true);
+            printBoard(boardTwo, false);
         }
 
         else if(player == PLAYER2) {
@@ -86,62 +133,67 @@ int main() {
                 do {
                     system(CLEAR);
                     printf("Player 2's turn:\n");
+                    printBoard(boardTwo, true);
                     printBoard(boardOne, false);
                     target = inputCoordinate();
                     shot_checker = checkShot(boardOne, target);
                 } while(shot_checker == -1);
-                updateBoard(boardOne, target);
+                updateCell(boardOne, target);
+                system(CLEAR);
+                printf("Player 2's turn:\n");
+                printBoard(boardTwo, true);
+                printBoard(boardOne, false);
             }
 
             else if(game_mode == PLAYER_VS_COOP) {
 
                 system(CLEAR);
-                printf("Computers trurn:\n");
-
-                if (last_target.x == -1){ //if last shot was a miss do a random shot
+                printf("Computers turn:\n");
+                if (last_target.x == -1) { //if last shot was a miss do a random shot
                     do {
                 		target.x = rand() % 10;
                 		target.y = rand() % 10;
                 		shot_checker = checkShot(boardOne, target);
                 	} while(shot_checker == -1);
 
-                    if (shot_checker != 0){ //boat hit
+                    if (shot_checker == 1) { //boat hit
                         last_target = target;
                     }
 
-                    updateBoard(boardOne, target);
+                    updateCell(boardOne, target);
                 }
 
-                else{
+                else {
                     //try every possible direction
 
                     target = last_target;
                     shot_checker = tryEveryDirection(boardOne,&target,&number_of_tested_shots);
-                    updateBoard(boardOne, target);
+                    updateCell(boardOne, target);
 
-                    if (shot_checker != 0){  //if boat is hit remeber new coordinates
+                    if (shot_checker == 1) {  //if boat is hit remeber new coordinates
                         last_target = target;
                         number_of_tested_shots = 0;
                     }
 
-                    else{
+                    else {
                         last_target.x = -1;
                         last_target.y = -1;
                     }
                 }
+
+                printBoard(boardOne, true);
             }
         }
-        // If player hit a boat, he will have one more chance to shoot
-        if(!shot_checker) {
-            system(CLEAR);
-            printf("Player %d's board:\n", player + 1);
-            fflush(stdin);
-            getchar();      //because of some magical reason, without this program deletes table before user input character for PLAYER1 (butit requests two characters for PLAYER2 - as expected)
-            if(player == PLAYER1) printBoard(boardOne, true);
-            else if(player == PLAYER2 && game_mode != PLAYER_VS_COOP) printBoard(boardTwo, true);
-            player = !player;
+
+        if(shot_checker == 1) {
+            printf("> %c%c is a hit!\n", target.x + 'A', target.y + '0');
             fflush(stdin);
             getchar();
+        } else {
+            printf("> %c%c is a miss!\n", target.x + 'A', target.y + '0');
+            fflush(stdin);
+            getchar();
+            player = !player;
         }
     }
 }
