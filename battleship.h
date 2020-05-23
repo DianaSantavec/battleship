@@ -62,6 +62,42 @@
     #define SYMBOL_T_ROTATED_SECOND "%c", 207
     #define SYMBOL_T_SECOND_TYPE "%c", 209
 
+    #include "boardLibrary.c"
+    #include "computerLogic.c"
+    #include "coordinatesFunctions.c"
+    #include "shipsFunctions.c"
+    #include <Windows.h>
+
+    typedef struct Window {
+        SHORT x; // Number of characters displayed horizontally
+        SHORT y; // Number of characters displayed vertically
+    } window;
+
+    /*
+     * Sets window size on Windows to a given width and height
+     *
+     * Parameters:
+     *     width  - number of characters displayed horizontally
+     *     height - number of characters displayed vertically
+     *
+     * Return (void):
+     *     Nothing
+     */
+
+    void setWindowSize(int width, int height) {
+        // Structure in WinConTypes.h (included in Windows.h) that holds buffer size
+        COORD coord = {width, height};
+        // Structure in WinConTypes.h (included in Windows.h) that holds all 4 corners of the window
+        SMALL_RECT rect = {0, 0, width - 1, height - 1};
+        // Security descriptor (included in Windows.h)
+        HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
+        // Functions for setting buffer and window size`
+        SetConsoleScreenBufferSize(handle, coord);
+        SetConsoleWindowInfo(handle, TRUE, &rect);
+
+        window size = {5 + 4 * COLS + 1, 1 + 2 * (3 + 2 * ROWS + 1) + 3};
+        setWindowSize(size.x, size.y);
+    }
 #endif
 
 /* Game modes */
@@ -120,6 +156,13 @@ typedef struct {
     char symbol;
     coordinates position;
 } cell;
+
+typedef struct {
+    char tip;
+    coordinates start_position;
+    int direction; //HORIZONTAL OR VERTICAL
+    int number_of_remaining_fields = 0;
+} ship_details;
 
 void printBoard(cell board[][COLS], bool);
 void initializeBoard(cell board[][COLS]);

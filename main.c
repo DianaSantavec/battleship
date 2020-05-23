@@ -1,47 +1,6 @@
-#ifdef _WIN32
-#include "boardLibrary.c"
-#include "computerLogic.c"
-#include "coordinatesFunctions.c"
-#include "shipsFunctions.c"
-#include <Windows.h>
-
-typedef struct Window {
-    SHORT x; // Number of characters displayed horizontally
-    SHORT y; // Number of characters displayed vertically
-} window;
-
-/*
- * Sets window size on Windows to a given width and height
- *
- * Parameters:
- *     width  - number of characters displayed horizontally
- *     height - number of characters displayed vertically
- *
- * Return (void):
- *     Nothing
- */
-
-void setWindowSize(int width, int height) {
-    // Structure in WinConTypes.h (included in Windows.h) that holds buffer size
-    COORD coord = {width, height};
-    // Structure in WinConTypes.h (included in Windows.h) that holds all 4 corners of the window
-    SMALL_RECT rect = {0, 0, width - 1, height - 1};
-    // Security descriptor (included in Windows.h)
-    HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
-    // Functions for setting buffer and window size
-    SetConsoleScreenBufferSize(handle, coord);
-    SetConsoleWindowInfo(handle, TRUE, &rect);
-}
-#endif
-
 #include "battleship.h"
 
 int main() {
-
-#ifdef _WIN32
-    window size = {5 + 4 * COLS + 1, 1 + 2 * (3 + 2 * ROWS + 1) + 3};
-    setWindowSize(size.x, size.y);
-#endif
 
     srand(time(NULL));
 
@@ -158,26 +117,31 @@ int main() {
 
                     if (shot_checker == 1) { //boat hit
                         last_target = target;
+
                     }
 
                     updateCell(boardOne, target);
                 }
 
-                else {
+                else { /*ne vredi implementirati co-op dok se ne odradi da li je brod potopljen, jer ce on ici npr na jednu stranu dok ima pogodaka, ali ako ne zna da li je brod potopljen kad anaidje na prvi promasaj nece se setiti da ode nazad da trazi ostatak (mada msm da to ni necu implemetirati)*/
                     //try every possible direction
+                    if (number_of_tested_shots == -1){
+                        target = last_target;
+                        shot_checker = tryEveryDirection(boardOne,&target,&number_of_tested_shots);
+                        updateCell(boardOne, target);
+                    }
 
-                    target = last_target;
-                    shot_checker = tryEveryDirection(boardOne,&target,&number_of_tested_shots);
-                    updateCell(boardOne, target);
-
-                    if (shot_checker == 1) {  //if boat is hit remeber new coordinates
+                    if (shot_checker == 1) {  //if boat is hitted remeber new coordinates
                         last_target = target;
                         number_of_tested_shots = 0;
                     }
-
-                    else {
+            
+                    else if (number_of_tested_shots == -1){
                         last_target.x = -1;
                         last_target.y = -1;
+                    }
+                    else{
+
                     }
                 }
 
@@ -197,3 +161,10 @@ int main() {
         }
     }
 }
+
+
+/*
+1. Treba dodati promenjivu i funkciju za to da li je brod potopljen
+2. Co-op je pogodio sredinu broda pa isao dva desno pa kad sam ja zavrsio, nije zavrsio brod nego gadjao gore levo kao random. Ispravi(prva slika)
+3. Dodaj isto sto sam ja dodao za window size ili ti bash size kod tebe, ako hoces (druga slika)
+*/
