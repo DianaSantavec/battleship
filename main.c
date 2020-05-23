@@ -125,13 +125,14 @@ int main() {
                     updateCell(boardOne, target);
                 }
 
-                else { /*ne vredi implementirati co-op dok se ne odradi da li je brod potopljen, jer ce on ici npr na jednu stranu dok ima pogodaka, ali ako ne zna da li je brod potopljen kad anaidje na prvi promasaj nece se setiti da ode nazad da trazi ostatak (mada msm da to ni necu implemetirati)*/
+                else {
+
                     //try every possible direction
-                    if (number_of_tested_shots == -1){
+                    //if (number_of_tested_shots == -1){
                         target = last_target;
                         shot_checker = tryEveryDirection(boardOne,&target,&number_of_tested_shots);
                         updateCell(boardOne, target);
-                    }
+                    //}
 
                     if (shot_checker != -1 && shot_checker != 0) {  //if boat is hitted remeber new coordinates
                         last_target = target;
@@ -142,16 +143,16 @@ int main() {
                         last_target.x = -1;
                         last_target.y = -1;
                     }
-                    else{
+                    //else{
 
-                    }
+                    //}
                 }
 
                 printBoard(boardOne, true);
             }
         }
 
-        if(shot_checker != 1 && shot_checker != 0) {
+        if(shot_checker != -1 && shot_checker != 0) {
             printf("> %c%c is a hit!\n", target.x + 'A', target.y + '0');
             for (i=0;i<NUMBER_OF_SHIPS_IN_TOTAL;i++){
                 for (j=0;j<LONGEST_SHIP;j++){  //actually, it could go to lengt of hitted ship, but tbh, this is easier for implementation and execution time is not so much longer
@@ -184,9 +185,14 @@ int main() {
             }
             fflush(stdin);
             getchar();
-        } else {
+            getchar();
+
+        }
+        
+        else {
             printf("> %c%c is a miss!\n", target.x + 'A', target.y + '0');
             fflush(stdin);
+            getchar();
             getchar();
             player = !player;
         }
