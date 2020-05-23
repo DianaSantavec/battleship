@@ -1,8 +1,11 @@
 #include "battleship.h"
 
 int main() {
+    int i,j;    //counters
 
     srand(time(NULL));
+
+    shipDetails ships_details[2][NUMBER_OF_SHIPS_IN_TOTAL]; //2 as in two players
 
     ShipType ship[NUM_OF_SHIPS] = {
         {NOSAC_AVIONA, 4, 1},
@@ -44,8 +47,8 @@ int main() {
     do {
         printf("> ");
         scanf("%d", &temp);
-        if(temp == 1) manualShips(boardOne, ship);
-        else if(temp == 2) randomShips(boardOne, ship);
+        if(temp == 1) manualShips(boardOne, ship, &ships_details[1]);
+        else if(temp == 2) randomShips(boardOne, ship, &ships_details[1]);
     } while(temp != 1 && temp != 2);
 
     if(game_mode) {
@@ -56,13 +59,12 @@ int main() {
         do {
             printf("> ");
             scanf("%d", &temp);
-            if(temp == 1) manualShips(boardTwo, ship);
-            else if(temp == 2) randomShips(boardTwo, ship);
+            if(temp == 1) manualShips(boardTwo, ship, &ships_details[0]);
+            else if(temp == 2) randomShips(boardTwo, ship, &ships_details[0]);
         } while(temp != 1 && temp != 2);
     }
 
-    else randomShips(boardTwo, ship);
-
+    else randomShips(boardTwo, ship, &ships_details[0]);
 
     //Choosing first player randomly
     int player = rand() % 2;
@@ -115,7 +117,7 @@ int main() {
                 		shot_checker = checkShot(boardOne, target);
                 	} while(shot_checker == -1);
 
-                    if (shot_checker == 1) { //boat hit
+                    if (shot_checker != -1 && shot_checker != 0) { //boat hit
                         last_target = target;
 
                     }
@@ -131,7 +133,7 @@ int main() {
                         updateCell(boardOne, target);
                     }
 
-                    if (shot_checker == 1) {  //if boat is hitted remeber new coordinates
+                    if (shot_checker != -1 && shot_checker != 0) {  //if boat is hitted remeber new coordinates
                         last_target = target;
                         number_of_tested_shots = 0;
                     }
@@ -149,8 +151,37 @@ int main() {
             }
         }
 
-        if(shot_checker == 1) {
+        if(shot_checker != 1 && shot_checker != 0) {
             printf("> %c%c is a hit!\n", target.x + 'A', target.y + '0');
+            for (i=0;i<NUMBER_OF_SHIPS_IN_TOTAL;i++){
+                for (j=0;j<LONGEST_SHIP;j++){  //actually, it could go to lengt of hitted ship, but tbh, this is easier for implementation and execution time is not so much longer
+                    if (ships_details[player][i].all_coordinates[j].x == target.x && ships_details[player][i].all_coordinates[j].y == target.y){
+                        ships_details[player][i].number_of_remaining_fields -=1;
+                        if (ships_details[player][i].number_of_remaining_fields <= 0){
+                            printf("> you sank the ");
+                            switch (shot_checker){
+                                case 1:
+                                    printf("nosac aviona");  //I don't know translations xD
+                                    break;
+                                case 2:
+                                    printf ("krstarica");
+                                    break;                 
+                                case 3:
+                                    printf("razarac");
+                                    break;               
+                                case 4:
+                                    printf("submarine");
+                                    break;
+                            }
+                            printf("!\n");
+                        }
+                    break;
+                    }
+                }
+                if (j<LONGEST_SHIP){
+                    break;
+                }
+            }
             fflush(stdin);
             getchar();
         } else {
@@ -160,6 +191,7 @@ int main() {
             player = !player;
         }
     }
+    return 0;
 }
 
 

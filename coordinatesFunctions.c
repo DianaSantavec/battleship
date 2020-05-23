@@ -53,10 +53,16 @@ int checkShot (cell board[][COLS], coordinates target) {
 			hit = 0;
 			break;
 		case NOSAC_AVIONA:
-		case KRSTARICA:
-		case RAZARAC:
-		case PODMORNICA:
 			hit = 1;
+			break;
+		case KRSTARICA:
+			hit = 2;
+			break;
+		case RAZARAC:
+			hit = 3;
+			break;
+		case PODMORNICA:
+			hit = 4;
 			break;
 		case HIT:
 		case MISS:

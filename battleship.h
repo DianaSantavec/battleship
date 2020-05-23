@@ -113,6 +113,8 @@
 /* Number of different types of ships */
 
 #define NUM_OF_SHIPS    4
+#define NUMBER_OF_SHIPS_IN_TOTAL 10
+#define LONGEST_SHIP 4
 
 /* Used for describing rotation of the ship */
 
@@ -158,17 +160,15 @@ typedef struct {
 } cell;
 
 typedef struct {
-    char tip;
-    coordinates start_position;
-    int direction; //HORIZONTAL OR VERTICAL
-    int number_of_remaining_fields = 0;
-} ship_details;
+    coordinates all_coordinates[LONGEST_SHIP];
+    int number_of_remaining_fields;
+} shipDetails;
 
 void printBoard(cell board[][COLS], bool);
 void initializeBoard(cell board[][COLS]);
 void putShipOnBoard(cell boardoard[][COLS], coordinates, int, ShipType);
-void randomShips(cell board[][COLS], ShipType ship[NUM_OF_SHIPS]);
-void manualShips(cell board[][COLS], ShipType ship[NUM_OF_SHIPS]);
+void randomShips(cell board[][COLS], ShipType ship[NUM_OF_SHIPS], shipDetails ship_details[]);
+void manualShips(cell board[][COLS], ShipType ship[NUM_OF_SHIPS], shipDetails ship_details[]);
 
 bool checkShipPlacement(cell board[][COLS], coordinates, int, int);
 coordinates inputCoordinate();

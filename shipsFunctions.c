@@ -23,9 +23,10 @@ bool checkShipPlacement(cell board[][COLS], coordinates beginning, int length, i
     return false;
 }
 
-void randomShips(cell board[][COLS], ShipType ship[NUM_OF_SHIPS]) {
+void randomShips(cell board[][COLS], ShipType ship[NUM_OF_SHIPS], shipDetails ship_details[]) {
     coordinates beginning;
     int direction;
+    int k = 0,z; // k- easier counting of element in array nedded for ship_details, z-just a counter
     for(int i = 0; i < NUM_OF_SHIPS; i++) {
         for(int j = 0; j < ship[i].ships; j++) {
             do {
@@ -34,13 +35,33 @@ void randomShips(cell board[][COLS], ShipType ship[NUM_OF_SHIPS]) {
                 direction = rand() % 2;
             } while(checkShipPlacement(board, beginning, ship[i].length, direction));
             putShipOnBoard(board, beginning, direction, ship[i]);
+            
+            for (z=0;z<ship[i].length;z++){
+                if(direction == HORIZONTAL){
+                    ship_details[k].all_coordinates[z].x = beginning.x;
+                    ship_details[k].all_coordinates[z].y = beginning.y + z;
+                }
+                else{
+                    ship_details[k].all_coordinates[z].x = beginning.x + z;
+                    ship_details[k].all_coordinates[z].y = beginning.y;
+                }
+            }
+            for (z;z<LONGEST_SHIP;z++){
+                ship_details[k].all_coordinates[z].x = -1;
+                ship_details[k].all_coordinates[z].y = -1;
+            }
+
+            ship_details[k].number_of_remaining_fields = ship[i].length;
+            k++;
+            
         }
     }
 }
 
-void manualShips(cell board[][COLS], ShipType ship[NUM_OF_SHIPS]) {
+void manualShips(cell board[][COLS], ShipType ship[NUM_OF_SHIPS], shipDetails ship_details[]) {
 	coordinates beginning;
 	int direction;
+    int k = 0,z = 0;  //counters
 	for(int i = 0; i < NUM_OF_SHIPS; i++) {
 		for(int j = 0; j < ship[i].ships; j++) {
 			system(CLEAR);
@@ -54,6 +75,24 @@ void manualShips(cell board[][COLS], ShipType ship[NUM_OF_SHIPS]) {
 				scanf("%d", &direction);
 			} while(checkShipPlacement(board, beginning, ship[i].length, --direction));
 			putShipOnBoard(board, beginning, direction, ship[i]);
+
+            for (z=0;z<ship[i].length;z++){
+                if(direction == HORIZONTAL){
+                    ship_details[k].all_coordinates[z].x = beginning.x;
+                    ship_details[k].all_coordinates[z].y = beginning.y + z;
+                }
+                else{
+                    ship_details[k].all_coordinates[z].x = beginning.x + z;
+                    ship_details[k].all_coordinates[z].y = beginning.y;
+                }
+            }
+            for (z;z<LONGEST_SHIP;z++){
+                ship_details[k].all_coordinates[z].x = -1;
+                ship_details[k].all_coordinates[z].y = -1;
+            }
+
+            ship_details[k].number_of_remaining_fields = ship[i].length;
+            k++;
 		}
 	}
 }
