@@ -71,11 +71,11 @@ int main() {
 
     //Starting game
     while(true) {
-        system(CLEAR);
+        //system(CLEAR);
 
         if(player == PLAYER1) {
             do {
-                system(CLEAR);
+                system(CLEAR);      /*zasto ispisujes tablu i brises je kada ce se svakako posle obrisati i biti ispisana samo update-ovana?*/
                 printf("Player 1's turn:\n");
                 printBoard(boardOne, true);
                 printBoard(boardTwo, false);
@@ -83,7 +83,7 @@ int main() {
                 shot_checker = checkShot(boardTwo, target);
             } while(shot_checker == -1);
             updateCell(boardTwo, target);
-            system(CLEAR);
+            //system(CLEAR);
             printf("Player 1's turn:\n");
             printBoard(boardOne, true);
             printBoard(boardTwo, false);
@@ -100,7 +100,7 @@ int main() {
                     shot_checker = checkShot(boardOne, target);
                 } while(shot_checker == -1);
                 updateCell(boardOne, target);
-                system(CLEAR);
+                //system(CLEAR);
                 printf("Player 2's turn:\n");
                 printBoard(boardTwo, true);
                 printBoard(boardOne, false);
@@ -108,7 +108,7 @@ int main() {
 
             else if(game_mode == PLAYER_VS_COOP) {
 
-                system(CLEAR);
+                //system(CLEAR);
                 printf("Computers turn:\n");
                 if (last_target.x == -1) { //if last shot was a miss do a random shot
                     do {
@@ -117,7 +117,7 @@ int main() {
                 		shot_checker = checkShot(boardOne, target);
                 	} while(shot_checker == -1);
 
-                    if (shot_checker != -1 && shot_checker != 0) { //boat hit
+                    if (shot_checker != 0) { //boat hit
                         last_target = target;
 
                     }
@@ -134,9 +134,9 @@ int main() {
                         updateCell(boardOne, target);
                     //}
 
-                    if (shot_checker != -1 && shot_checker != 0) {  //if boat is hitted remeber new coordinates
+                    if (shot_checker != 0) {  //if boat is hitted remeber new coordinates
                         last_target = target;
-                        number_of_tested_shots = 0;
+                        //number_of_tested_shots = 0;
                     }
             
                     else if (number_of_tested_shots == -1){
