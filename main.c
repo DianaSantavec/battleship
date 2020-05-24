@@ -34,6 +34,8 @@ int main() {
     int game_mode,  // Stores mode of the game (0 or 1)
         temp;       // Stores temporary values
 
+    stackElement *stack = NULL; //pointer to top of a stack for co-op
+
     // Set both boards to WATER
 
     initializeBoard(boardOne);
@@ -121,7 +123,8 @@ int main() {
 
                 system(CLEAR);
                 printf("Computers turn:\n");
-                if (last_target.x == -1) { //if last shot was a miss do a random shot
+                last_target = Top(stack);
+                if (last_target.x ==-1 && last_target.y == -1) { //if last shot was a miss do a random shot
                     do {
                 		target.x = rand() % 10;
                 		target.y = rand() % 10;
@@ -140,8 +143,8 @@ int main() {
 
                     //try every possible direction
                     //if (number_of_tested_shots == -1){
-                        target = last_target;
-                        shot_checker = tryEveryDirection(boardOne,&target,&number_of_tested_shots);
+                        target = Top(stack);
+                        shot_checker = (boardOne,&target,&number_of_tested_shots);
                         updateCell(boardOne, target);
                     //}
 
@@ -151,8 +154,7 @@ int main() {
                     }
 
                     else if (number_of_tested_shots == -1){
-                        last_target.x = -1;
-                        last_target.y = -1;
+                        stack = Pop(stack);
                     }
                     //else{
 
@@ -187,6 +189,9 @@ int main() {
                             }
                             printf("!\n");
                         }
+                    if (game_mode == PLAYER_VS_COOP){
+                        stack =Pop(stack);
+                    }
                     break;
                     }
                 }
@@ -208,6 +213,7 @@ int main() {
             player = !player;
         }
     }
+    Free(stack);
     return 0;
 }
 

@@ -136,6 +136,11 @@ typedef struct {
     int number_of_remaining_fields;
 } shipDetails;
 
+typedef struct element{
+    coordinates coordinate;
+    struct element *next;
+}stackElement;
+
 void printBoard(cell board[][COLS], bool);
 void initializeBoard(cell board[][COLS]);
 void putShipOnBoard(cell boardoard[][COLS], coordinates, int, ShipType);
@@ -148,4 +153,9 @@ int checkShot(cell board[][COLS], coordinates);
 void updateCell (cell board[][COLS], coordinates);
 
 int tryEveryDirection(cell playersBoard[][COLS], coordinates *target, int *number_of_tested_shots);
+
+stackElement *Push(stackElement *stack, coordinates new_coordinates);
+stackElement * Pop(stackElement *stack);
+const coordinates Top(const stackElement *stack);
+void Free(stackElement *stack);
 #endif

@@ -66,14 +66,18 @@ void manualShips(cell board[][COLS], ShipType ship[NUM_OF_SHIPS], shipDetails sh
 		for(int j = 0; j < ship[i].ships; j++) {
 			system(CLEAR);
 			printBoard(board, true);
-			do {
-				beginning = inputCoordinate();
-				printf("> Enter direction:\n");
-				printf("> [1] Horizontal\n");
-				printf("> [2] Vertical\n");
-				printf("> ");
-				scanf("%d", &direction);
-			} while(checkShipPlacement(board, beginning, ship[i].length, --direction));
+			beginning = inputCoordinate();
+            printf("> Enter direction:\n");
+            do {
+            	printf("> [1] Horizontal\n");
+            	printf("> [2] Vertical\n");
+                printf("> ");
+            	scanf("%d", &direction);
+                if(direction != 1 && direction != 2) {
+                    system(CLEAR);
+                    continue;
+                }
+            } while(checkShipPlacement(board, beginning, ship[i].length, --direction));
 			putShipOnBoard(board, beginning, direction, ship[i]);
 
             for (z=0;z<ship[i].length;z++){
