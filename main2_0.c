@@ -5,7 +5,7 @@
 
 #include "battleship.h"
 
-#define IP "192.168.0.18"
+#define IP "127.0.0.1"
 #define PORT 7777
 #define MAX_NUM_CLIENTS 1
 #define MAX_LEN 1000
@@ -19,8 +19,6 @@ int main() {
     WSADATA wsa;
 	SOCKET mainSocket, acceptSocket;
     char ips[100];
-    /*strcpy(ips, );
-    ips[100] = '\0';*/
     sprintf(ips, "%s\n", stdout);
     system("@echo off & for /f \"usebackq tokens=2 delims=:\" %a in (`ipconfig ^| findstr \"IPv4\"`) do echo %a");
     getchar();
@@ -46,10 +44,14 @@ int main() {
 
     int game_mode = -1, // Stores mode of the game (0 or 1)
         com_mode = -1,
+        player,
         temp,           // Stores temporary values
         i, j;           // Counters
 
-    char temp_ch[2];
+    char temp_ch[3];
+
+    initializeBoard(boardOne);
+    initializeBoard(boardTwo);
 
     do {
         system(CLEAR);
@@ -87,6 +89,9 @@ int main() {
             printf("Connection failed. error: %s\n",WSAGetLastError());
             return 1;
         }
+
+        messageLength = recv(mainSocket, message, MAX_LEN, 0);
+        player = message[0] - '0';
     } else {
         sock_addr.sin_addr.s_addr = INADDR_ANY;
         if(bind(mainSocket, (struct sockaddr*)&sock_addr, sizeof(sock_addr)) == SOCKET_ERROR) {
@@ -101,19 +106,31 @@ int main() {
             printf("Accept failed.\n");
             return 1;
         }
+
+        player = rand() % 2;
+        message[0] = !player + '0';
+        message[1] = '\0';
+        send(acceptSocket, message, 1, 0);
     }
 
-    do {
-        system(CLEAR);
-        printf("> [1] Player vs CO-OP\n");
-        printf("> [2] Player vs Player\n");
-        printf("> ");
-        fflush(stdin);
-        scanf("%1[^\n]s", temp_ch);
-        if(temp_ch[0] == '1' || temp_ch[0] == '2') {
-            game_mode = temp_ch[0] - '1';
-        }
-    } while(game_mode == -1);
+    if(!com_mode) {
+        do {
+            system(CLEAR);
+            printf("> [1] Player vs CO-OP\n");
+            printf("> [2] Player vs Player\n");
+            printf("> ");
+            fflush(stdin);
+            scanf("%1[^\n]s", temp_ch);
+            if(temp_ch[0] == '1' || temp_ch[0] == '2') {
+                game_mode = temp_ch[0] - '1';
+            }
+        } while(game_mode == -1);
+        temp_ch[0] -= '1';
+        send(acceptSocket, temp_ch, 1, 0);
+    } else {
+        recv(mainSocket, temp_ch, 1, 0);
+        game_mode = temp_ch[0] + '0';
+    }
 
     if(game_mode == PLAYER_VS_COOP) {
         randomShips(boardTwo, ship, &ships_details[0]);
@@ -134,7 +151,29 @@ int main() {
         if(game_mode == PLAYER_VS_COOP) {
 
         } else if(game_mode == PLAYER_V_PLAYER) {
-
+            if(player) {
+                while(recv(mainSocket, temp_ch, 2, 0) > 0) {
+                    target.x = temp_ch[0] - 'A';
+                    target.y = temp_ch[1] - '0';
+                    shot_checker = checkShot(boardOne, target);
+                    temp_ch[0] = shot_checker + '0';
+                    send(mainSocket, temp_ch, 1, 0);
+                    updateCell(boardOne, target);
+                }
+            } else {
+                target = inputCoordinate();
+                temp_ch[0] = target.x + 'A';
+                temp_ch[1] = target.y + '0';
+                temp_ch[2] = '\0';
+                send(acceptSocket, temp_ch, 2, 0);
+                recv(acceptSocket, temp_ch, 1, 0);
+                if(temp_ch[0] - '0' == 0) {
+                    boardTwo[target.x][target.y].symbol = MISS;
+                    player = !player;
+                } else if(temp_ch[0] - '0' > 0 && temp_ch[0] - '0' < 5) {
+                    boardTwo[target.x][target.y].symbol = HIT;
+                }
+            }
         }
     }
 
