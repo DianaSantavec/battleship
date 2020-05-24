@@ -1,6 +1,29 @@
 #include "battleship.h"
 
 /*
+ * Sets window size on Windows to a given width and height
+ *
+ * Parameters:
+ *     width  - number of characters displayed horizontally
+ *     height - number of characters displayed vertically
+ *
+ * Return (void):
+ *     Nothing
+ */
+
+void setWindowSize(int width, int height) {
+	// Structure in WinConTypes.h (included in Windows.h) that holds buffer size
+	COORD coord = {width, height};
+	// Structure in WinConTypes.h (included in Windows.h) that holds all 4 corners of the window
+	SMALL_RECT rect = {0, 0, width - 1, height - 1};
+	// Security descriptor (included in Windows.h)
+	HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
+	// Functions for setting buffer and window size`
+	SetConsoleScreenBufferSize(handle, coord);
+	SetConsoleWindowInfo(handle, TRUE, &rect);
+}
+
+/*
  * Iterates through all board cells and initializes it's symbol and coordinates
  *
  * Parameters:
