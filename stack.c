@@ -1,6 +1,6 @@
 #include "battleship.h"
 
-stackElement *Push(stackElement *stack, coordinates new_coordinates){
+stackElement *Push(stackElement *stack, coordinates new_coordinates, int number_of_tested_shots){
     stackElement *new_element = (stackElement*) malloc(sizeof(stackElement));
     
     if(new_element == NULL){
@@ -8,6 +8,8 @@ stackElement *Push(stackElement *stack, coordinates new_coordinates){
     }
 
     new_element->coordinate = new_coordinates;
+    new_element->number_of_tested_shots = -1;
+    new_element->number_of_tested_shots = number_of_tested_shots;
     new_element->next = stack;
     return new_element;
 }
@@ -15,7 +17,7 @@ stackElement *Push(stackElement *stack, coordinates new_coordinates){
 
 stackElement * Pop(stackElement *stack){
     if (stack == NULL){
-        return stack;
+        return NULL;
     }
     else{
         stackElement *current = stack;
@@ -25,15 +27,16 @@ stackElement * Pop(stackElement *stack){
     }
 }
 
-const coordinates Top(const stackElement *stack){
+const stackElement *Top(const stackElement *stack){
     if (stack == NULL){
-        coordinates empy;
-        empy.x = -1;
-        empy.y = -1;
-        return empy;
+        //stackElement empty;
+        //empty.coordinate.x = -1;
+        //empty.coordinate.y = -1;
+        //empty.number_of_tested_shots = -1;
+        return NULL;
     }
     else{
-        return stack->coordinate;
+        return stack;
     }
 
 }

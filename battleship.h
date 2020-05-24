@@ -138,6 +138,7 @@ typedef struct {
 
 typedef struct element{
     coordinates coordinate;
+    int number_of_tested_shots;
     struct element *next;
 }stackElement;
 
@@ -154,8 +155,8 @@ void updateCell (cell board[][COLS], coordinates);
 
 int tryEveryDirection(cell playersBoard[][COLS], coordinates *target, int *number_of_tested_shots);
 
-stackElement *Push(stackElement *stack, coordinates new_coordinates);
+stackElement *Push(stackElement *stack, coordinates new_coordinates, int number_of_tested_shots);
 stackElement * Pop(stackElement *stack);
-const coordinates Top(const stackElement *stack);
+const stackElement *Top(const stackElement *stack);
 void Free(stackElement *stack);
 #endif

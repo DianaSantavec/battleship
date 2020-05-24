@@ -1,7 +1,10 @@
+#ifdef __WIN32
 #include "boardLibrary.c"
 #include "computerLogic.c"
 #include "coordinatesFunctions.c"
 #include "shipsFunctions.c"
+
+#endif
 
 #include "battleship.h"
 
@@ -34,7 +37,7 @@ int main() {
     int game_mode,  // Stores mode of the game (0 or 1)
         temp;       // Stores temporary values
 
-    stackElement *stack = NULL; //pointer to top of a stack for co-op
+    stackElement *stack = NULL, *element; //pointer to top of a stack for co-op
 
     // Set both boards to WATER
 
@@ -123,16 +126,19 @@ int main() {
 
                 system(CLEAR);
                 printf("Computers turn:\n");
-                last_target = Top(stack);
-                if (last_target.x ==-1 && last_target.y == -1) { //if last shot was a miss do a random shot
+                element = Top(stack);
+                if (element == NULL) { //if last shot was a miss do a random shot
                     do {
+                        printf("idem na random :/");
                 		target.x = rand() % 10;
                 		target.y = rand() % 10;
                 		shot_checker = checkShot(boardOne, target);
                 	} while(shot_checker == -1);
 
                     if (shot_checker != -1 && shot_checker != 0) { //boat hit
-                        last_target = target;
+                        stack = Push(stack,target,number_of_tested_shots);
+                        printf("URADIO SAM PUSH <3");
+
 
                     }
 
@@ -140,21 +146,25 @@ int main() {
                 }
 
                 else {
+                    target = element->coordinate;
+                    number_of_tested_shots = element->number_of_tested_shots;
 
                     //try every possible direction
                     //if (number_of_tested_shots == -1){
-                        target = Top(stack);
-                        shot_checker = (boardOne,&target,&number_of_tested_shots);
+                        shot_checker = tryEveryDirection(boardOne,&target,&number_of_tested_shots);
                         updateCell(boardOne, target);
                     //}
 
                     if (shot_checker != -1 && shot_checker != 0) {  //if boat is hitted remeber new coordinates
-                        last_target = target;
-                        number_of_tested_shots = 0;
+                        stack = Push(stack,target,number_of_tested_shots);
+                        //last_target = target;
+                        //number_of_tested_shots = 0;
+                        printf("URADIO SAM PUSH <3");
                     }
 
-                    else if (number_of_tested_shots == -1){
+                    else if (number_of_tested_shots == -2){
                         stack = Pop(stack);
+                        printf("URADIO SAM POP AH AH AH AH >:)");
                     }
                     //else{
 
@@ -175,7 +185,7 @@ int main() {
                             printf("> you sank the ");
                             switch (shot_checker){
                                 case 1:
-                                    printf("nosac aviona");  //I don't know translations xD
+                                    printf("nosac aviona");  //I don't know translations
                                     break;
                                 case 2:
                                     printf ("krstarica");
@@ -189,9 +199,6 @@ int main() {
                             }
                             printf("!\n");
                         }
-                    if (game_mode == PLAYER_VS_COOP){
-                        stack =Pop(stack);
-                    }
                     break;
                     }
                 }
