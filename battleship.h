@@ -13,6 +13,7 @@
 
 #include <time.h>       // Used for generating random numbers
 #include <ctype.h>      // Used for user input
+#include <string.h>
 
 /* Check if the program is running on Linux or Windows */
 
@@ -63,6 +64,10 @@
     #define SYMBOL_T_SECOND_TYPE "%c", 209
 
     #include <Windows.h>
+    #include <winsock2.h>
+    #include <ws2tcpip.h>
+
+    #pragma comment(lib, "ws2_32.lib") //Winsock Library
 
     typedef struct Window {
         SHORT x; // Number of characters displayed horizontally
