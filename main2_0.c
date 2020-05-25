@@ -90,8 +90,8 @@ int main() {
             return 1;
         }
 
-        messageLength = recv(mainSocket, message, MAX_LEN, 0);
-        player = message[0] - '0';
+        recv(mainSocket, temp_ch, MAX_LEN, 0);
+        player = temp_ch[0] - '0';
     } else {
         sock_addr.sin_addr.s_addr = INADDR_ANY;
         if(bind(mainSocket, (struct sockaddr*)&sock_addr, sizeof(sock_addr)) == SOCKET_ERROR) {
@@ -108,10 +108,14 @@ int main() {
         }
 
         player = rand() % 2;
-        message[0] = !player + '0';
-        message[1] = '\0';
-        send(acceptSocket, message, 1, 0);
+        temp_ch[0] = !player + '0';
+        temp_ch[1] = '\0';
+        send(acceptSocket, temp_ch, 1, 0);
     }
+
+    printf("Randomly picked player %d.\n", player + 1);
+    getchar();
+    getchar();
 
     if(!com_mode) {
         do {
@@ -125,11 +129,10 @@ int main() {
                 game_mode = temp_ch[0] - '1';
             }
         } while(game_mode == -1);
-        temp_ch[0] -= '1';
         send(acceptSocket, temp_ch, 1, 0);
     } else {
         recv(mainSocket, temp_ch, 1, 0);
-        game_mode = temp_ch[0] + '0';
+        game_mode = temp_ch[0] - '1';
     }
 
     if(game_mode == PLAYER_VS_COOP) {
@@ -152,27 +155,43 @@ int main() {
 
         } else if(game_mode == PLAYER_V_PLAYER) {
             if(player) {
-                while(recv(mainSocket, temp_ch, 2, 0) > 0) {
+                while(player == 1) {
+                    system(CLEAR);
+                    printf("Enemy playing...\n");
+                    printBoard(boardOne, true);
+                    recv((com_mode) ? mainSocket : acceptSocket, temp_ch, 2, 0);
                     target.x = temp_ch[0] - 'A';
                     target.y = temp_ch[1] - '0';
                     shot_checker = checkShot(boardOne, target);
+                    if(shot_checker == 0) printf("He missed! :)\n");
+                    else printf("We got hit...\n");
                     temp_ch[0] = shot_checker + '0';
-                    send(mainSocket, temp_ch, 1, 0);
+                    temp_ch[1] = '\0';
+                    send((com_mode) ? mainSocket : acceptSocket, temp_ch, 1, 0);
+                    recv((com_mode) ? mainSocket : acceptSocket, temp_ch, 1, 0);
+                    player = temp_ch[0] - '0';
                     updateCell(boardOne, target);
                 }
             } else {
+                system(CLEAR);
+                printf("It's your move!\n");
+                printBoard(boardTwo, false);
                 target = inputCoordinate();
                 temp_ch[0] = target.x + 'A';
                 temp_ch[1] = target.y + '0';
                 temp_ch[2] = '\0';
-                send(acceptSocket, temp_ch, 2, 0);
-                recv(acceptSocket, temp_ch, 1, 0);
+                send((com_mode) ? mainSocket : acceptSocket, temp_ch, 2, 0);
+                recv((com_mode) ? mainSocket : acceptSocket, temp_ch, 1, 0);
                 if(temp_ch[0] - '0' == 0) {
                     boardTwo[target.x][target.y].symbol = MISS;
                     player = !player;
                 } else if(temp_ch[0] - '0' > 0 && temp_ch[0] - '0' < 5) {
                     boardTwo[target.x][target.y].symbol = HIT;
                 }
+                temp_ch[0] = !player + '0';
+                temp_ch[1] = '\0';
+                send((com_mode) ? mainSocket : acceptSocket, temp_ch, 1, 0);
+                updateCell(boardTwo, target);
             }
         }
     }
