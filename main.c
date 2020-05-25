@@ -154,6 +154,7 @@ int main() {
                         //target = tryEveryDirection(boardOne,&target,stack)
                         //shot_checker = tryEveryDirection(boardOne,&target,&number_of_tested_shots);
                         target = tryEveryDirection(boardOne, &stack);
+                        shot_checker = checkShot(boardOne,target);
                         //samoTest(&stack);
                         updateCell(boardOne, target);
                     //}
@@ -189,10 +190,11 @@ int main() {
                                     break;
                             }
                             printf("!\n");
+                            if (game_mode == PLAYER_VS_COOP && player == PLAYER2){
+                                printf("uradio pop main\n");
+                                stack = Pop(stack);
+                            }
                         }
-                    if (game_mode == PLAYER_VS_COOP){
-                        stack = Pop(stack);
-                    }
                     break;
                     }
                 }
