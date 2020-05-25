@@ -32,7 +32,7 @@ int main() {
 
     coordinates target, last_target = {-1,-1}; // Last_target is for co-op
 
-    int shot_checker, number_of_tested_shots = -1; // number_of_tested_shots is for co-op, testing is every field around hit tested
+    int shot_checker;
 
     int game_mode,  // Stores mode of the game (0 or 1)
         temp;       // Stores temporary values
@@ -126,41 +126,24 @@ int main() {
 
                 system(CLEAR);
                 printf("Computers turn:\n");
-                //element = Top(stack);
-                //if (element == NULL) { //if last shot was a miss do a random shot
-                //if (!isEmpty(stack)){
-                if (stack == NULL){
+                if (stack == NULL){ //if last shot was a miss due a random shot do random shot again
                     do {
                 		target.x = rand() % 10;
                 		target.y = rand() % 10;
                 		shot_checker = checkShot(boardOne, target);
                 	} while(shot_checker == -1);
 
-                    if (shot_checker != -1 && shot_checker != 0) { //boat hit
-                        stack = Push(stack,target,number_of_tested_shots);
-                        printf("URADIO SAM PUSH <3");
+                    if (shot_checker != -1 && shot_checker != 0) { // if a ship is hit
+                        stack = Push(stack,target,-1);     //remember coordinates on stack, -1 because no more fields are tested around hit
                     }
 
                     updateCell(boardOne, target);
                 }
 
                 else {
-                    //target = element->coordinate;
-                    //number_of_tested_shots = element->number_of_tested_shots;
-
-                    //try every possible direction
-                    //if (number_of_tested_shots == -1){
-
-                        //target = tryEveryDirection(boardOne,&target,stack)
-                        //shot_checker = tryEveryDirection(boardOne,&target,&number_of_tested_shots);
                         target = tryEveryDirection(boardOne, &stack);
                         shot_checker = checkShot(boardOne,target);
-                        //samoTest(&stack);
                         updateCell(boardOne, target);
-                    //}
-                    //else{
-
-                    //}
                 }
 
                 printBoard(boardOne, true);
@@ -169,6 +152,7 @@ int main() {
 
         if(shot_checker != -1 && shot_checker != 0) {
             printf("> %c%c is a hit!\n", target.x + 'A', target.y + '0');
+            //checks every coordinate that contains a ship and decreases number of fields that ship contains 
             for (i=0;i<NUMBER_OF_SHIPS_IN_TOTAL;i++){
                 for (j=0;j<LONGEST_SHIP;j++){  //actually, it could go to lengt of hitted ship, but tbh, this is easier for implementation and execution time is not so much longer
                     if (ships_details[player][i].all_coordinates[j].x == target.x && ships_details[player][i].all_coordinates[j].y == target.y){
@@ -190,8 +174,7 @@ int main() {
                                     break;
                             }
                             printf("!\n");
-                            if (game_mode == PLAYER_VS_COOP && player == PLAYER2){
-                                printf("uradio pop main\n");
+                            if (game_mode == PLAYER_VS_COOP && player == PLAYER2){  //if ship is sunken and if game is vs co-op remove field from the stack
                                 stack = Pop(stack);
                             }
                         }
@@ -219,10 +202,3 @@ int main() {
     Free(stack);
     return 0;
 }
-
-
-/*
-1. Treba dodati promenjivu i funkciju za to da li je brod potopljen
-2. Co-op je pogodio sredinu broda pa isao dva desno pa kad sam ja zavrsio, nije zavrsio brod nego gadjao gore levo kao random. Ispravi(prva slika)
-3. Dodaj isto sto sam ja dodao za window size ili ti bash size kod tebe, ako hoces (druga slika)
-*/
