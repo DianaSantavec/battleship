@@ -151,21 +151,12 @@ int main() {
 
                     //try every possible direction
                     //if (number_of_tested_shots == -1){
-                        shot_checker = tryEveryDirection(boardOne,&target,&number_of_tested_shots);
+
+                        //target = tryEveryDirection(boardOne,&target,stack)
+                        //shot_checker = tryEveryDirection(boardOne,&target,&number_of_tested_shots);
+                        target = tryEveryDirection(boardOne,stack);
                         updateCell(boardOne, target);
                     //}
-
-                    if (shot_checker != -1 && shot_checker != 0) {  //if boat is hitted remeber new coordinates
-                        stack = Push(stack,target,number_of_tested_shots);
-                        //last_target = target;
-                        //number_of_tested_shots = 0;
-                        printf("URADIO SAM PUSH <3");
-                    }
-
-                    else if (number_of_tested_shots == -2){
-                        stack = Pop(stack);
-                        printf("URADIO SAM POP AH AH AH AH >:)");
-                    }
                     //else{
 
                     //}
@@ -199,6 +190,9 @@ int main() {
                             }
                             printf("!\n");
                         }
+                    if (game_mode == PLAYER_VS_COOP){
+                        Pop(stack);
+                    }
                     break;
                     }
                 }
