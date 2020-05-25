@@ -153,11 +153,13 @@ coordinates inputCoordinate();
 int checkShot(cell board[][COLS], coordinates);
 void updateCell (cell board[][COLS], coordinates);
 
-//int tryEveryDirection(cell playersBoard[][COLS], coordinates *target, int *number_of_tested_shots);
-coordinates tryEveryDirection(cell board[][COLS], stackElement *stack);
+coordinates tryEveryDirection(cell board[][COLS], stackElement **stack);
 
 stackElement *Push(stackElement *stack, coordinates new_coordinates, int number_of_tested_shots);
 stackElement * Pop(stackElement *stack);
 const stackElement *Top(const stackElement *stack);
 void Free(stackElement *stack);
+int isEmpty(stackElement *stack);
+
+
 #endif

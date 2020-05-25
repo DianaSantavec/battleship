@@ -36,7 +36,11 @@ const stackElement *Top(const stackElement *stack){
         return NULL;
     }
     else{
-        return stack;
+        stackElement new;
+        new.coordinate.x = stack->coordinate.x;
+        new.coordinate.y = stack->coordinate.y;
+        new.number_of_tested_shots = stack->number_of_tested_shots;
+        return &new;
     }
 
 }
@@ -45,4 +49,8 @@ void Free(stackElement *stack){
     while (stack != NULL){
         stack = Pop(stack);
     }
+}
+
+int isEmpty(stackElement *stack) {
+    return !stack;
 }

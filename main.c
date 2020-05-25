@@ -126,10 +126,11 @@ int main() {
 
                 system(CLEAR);
                 printf("Computers turn:\n");
-                element = Top(stack);
-                if (element == NULL) { //if last shot was a miss do a random shot
+                //element = Top(stack);
+                //if (element == NULL) { //if last shot was a miss do a random shot
+                //if (!isEmpty(stack)){
+                if (stack == NULL){
                     do {
-                        printf("idem na random :/");
                 		target.x = rand() % 10;
                 		target.y = rand() % 10;
                 		shot_checker = checkShot(boardOne, target);
@@ -138,23 +139,22 @@ int main() {
                     if (shot_checker != -1 && shot_checker != 0) { //boat hit
                         stack = Push(stack,target,number_of_tested_shots);
                         printf("URADIO SAM PUSH <3");
-
-
                     }
 
                     updateCell(boardOne, target);
                 }
 
                 else {
-                    target = element->coordinate;
-                    number_of_tested_shots = element->number_of_tested_shots;
+                    //target = element->coordinate;
+                    //number_of_tested_shots = element->number_of_tested_shots;
 
                     //try every possible direction
                     //if (number_of_tested_shots == -1){
 
                         //target = tryEveryDirection(boardOne,&target,stack)
                         //shot_checker = tryEveryDirection(boardOne,&target,&number_of_tested_shots);
-                        target = tryEveryDirection(boardOne,stack);
+                        target = tryEveryDirection(boardOne, &stack);
+                        //samoTest(&stack);
                         updateCell(boardOne, target);
                     //}
                     //else{
@@ -191,7 +191,7 @@ int main() {
                             printf("!\n");
                         }
                     if (game_mode == PLAYER_VS_COOP){
-                        Pop(stack);
+                        stack = Pop(stack);
                     }
                     break;
                     }
