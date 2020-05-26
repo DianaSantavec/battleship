@@ -46,7 +46,6 @@ void initializeBoard(cell board[][COLS]) {
 		}
     }
 }
-
 /*
  * Prints out a given board
  *

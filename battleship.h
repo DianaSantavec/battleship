@@ -13,6 +13,7 @@
 
 #include <time.h>       // Used for generating random numbers
 #include <ctype.h>      // Used for user input
+#include <string.h>
 
 /* Check if the program is running on Linux or Windows */
 
@@ -39,6 +40,14 @@
     #define HORIZONTAL_LINE_SINGLE "\u2500\u2500\u2500"  //unicode ima isti kod za ova dva karaktera?
     #define HORIZONTAL_LINE "\u2550\u2550\u2550"
 
+    #define SEND write
+    #define RECEIVE read
+    #define PARAMETER
+
+    #include <netdb.h>
+    #include <netinet/in.h>
+
+    #define CLOSE_SOCKET close
 #else
     #define CLEAR "cls"
     //extended ascii
@@ -62,7 +71,17 @@
     #define SYMBOL_T_ROTATED_SECOND "%c", 207
     #define SYMBOL_T_SECOND_TYPE "%c", 209
 
+    #define SEND send
+    #define RECEIVE recv
+    #define PARAMETER , 0
+
     #include <Windows.h>
+    #include <winsock2.h>
+    #include <ws2tcpip.h>
+
+    #define CLOSE_SOCKET closesocket
+
+    #pragma comment(lib, "ws2_32.lib") //Winsock Library
 
     typedef struct Window {
         SHORT x; // Number of characters displayed horizontally
