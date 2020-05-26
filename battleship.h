@@ -40,6 +40,12 @@
     #define HORIZONTAL_LINE_SINGLE "\u2500\u2500\u2500"  //unicode ima isti kod za ova dva karaktera?
     #define HORIZONTAL_LINE "\u2550\u2550\u2550"
 
+    #define SEND write
+    #define RECEIVE read
+    #define PARAMETER
+
+    #include <netdb.h>
+    #include <netinet/in.h>
 #else
     #define CLEAR "cls"
     //extended ascii
@@ -62,6 +68,10 @@
     #define SYMBOL_HORIZONTAL_LINE 205
     #define SYMBOL_T_ROTATED_SECOND "%c", 207
     #define SYMBOL_T_SECOND_TYPE "%c", 209
+
+    #define SEND send
+    #define RECEIVE recv
+    #define PARAMETER , 0
 
     #include <Windows.h>
     #include <winsock2.h>

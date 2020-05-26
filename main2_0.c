@@ -7,7 +7,6 @@
 
 #define PORT 7777
 #define MAX_NUM_CLIENTS 1
-#define MAX_LEN 100
 
 int main() {
 
@@ -17,6 +16,8 @@ int main() {
 
     WSADATA wsa;
 	SOCKET mainSocket, acceptSocket;
+#else
+    int mainSocket, acceptSocket;
 #endif
 
     srand(time(NULL));
@@ -64,16 +65,16 @@ int main() {
 
     struct sockaddr_in sock_addr;
     int sockAddrInLength = sizeof(struct sockaddr_in);
-    char message[MAX_LEN];
-    int messageLength;
 
+#ifdef _WIN32
     if (WSAStartup(MAKEWORD(2,2), &wsa)) {
         printf("Failed. Error Code : %d\n",WSAGetLastError());
         return 1;
     }
+#endif
 
-    if((mainSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == INVALID_SOCKET) {
-        printf("Could not create socket : %d" , WSAGetLastError());
+    if((mainSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1) {
+        printf("Could not create socket.\n");
         return 1;
     }
 
@@ -86,10 +87,10 @@ int main() {
         scanf("%s", ip);
         sock_addr.sin_addr.s_addr = inet_addr(ip);
         if(connect(mainSocket, (struct sockaddr*) &sock_addr, sizeof sock_addr) < 0) {
-            printf("Connection failed. error: %s\n",WSAGetLastError());
+            printf("Connection failed.\n");
             return 1;
         }
-        recv(mainSocket, temp_ch, 1, 0);
+        RECEIVE(mainSocket, temp_ch, 1 PARAMETER);
         player = temp_ch[0] - '0';
     } else {
         system(CLEAR);
@@ -100,7 +101,7 @@ int main() {
         system("ip -4 addr show eth0 | grep -oP '(?<=inet\\s)\\d+(\\.\\d+){3}'");
 #endif
         sock_addr.sin_addr.s_addr = INADDR_ANY;
-        if(bind(mainSocket, (struct sockaddr*)&sock_addr, sizeof(sock_addr)) == SOCKET_ERROR) {
+        if(bind(mainSocket, (struct sockaddr*)&sock_addr, sizeof(sock_addr)) == -1) {
             printf("Binding socket on port %d failed.\n", PORT);
             return 1;
         }
@@ -108,7 +109,7 @@ int main() {
         listen(mainSocket, MAX_NUM_CLIENTS);
 
         acceptSocket = accept(mainSocket, (struct sockaddr*)&sock_addr, &sockAddrInLength);
-        if(acceptSocket == INVALID_SOCKET) {
+        if(acceptSocket == -1) {
             printf("Accept failed.\n");
             return 1;
         }
@@ -116,7 +117,7 @@ int main() {
         player = rand() % 2;
         temp_ch[0] = !player + '0';
         temp_ch[1] = '\0';
-        send(acceptSocket, temp_ch, 1, 0);
+        SEND(acceptSocket, temp_ch, 1 PARAMETER);
     }
 
     printf("> Randomly picked player %d.\n", player + 1);
@@ -135,9 +136,9 @@ int main() {
                 game_mode = temp_ch[0] - '1';
             }
         } while(game_mode == -1);
-        send(acceptSocket, temp_ch, 1, 0);
+        SEND(acceptSocket, temp_ch, 1 PARAMETER);
     } else {
-        recv(mainSocket, temp_ch, 1, 0);
+        RECEIVE(mainSocket, temp_ch, 1 PARAMETER);
         game_mode = temp_ch[0] - '1';
     }
 
@@ -165,7 +166,7 @@ int main() {
                     system(CLEAR);
                     printf("Enemy playing...\n");
                     printBoard(boardOne, true);
-                    recv((com_mode) ? mainSocket : acceptSocket, temp_ch, 2, 0);
+                    RECEIVE((com_mode) ? mainSocket : acceptSocket, temp_ch, 2 PARAMETER);
                     target.x = temp_ch[0] - 'A';
                     target.y = temp_ch[1] - '0';
                     shot_checker = checkShot(boardOne, target);
@@ -173,8 +174,8 @@ int main() {
                     else printf("We got hit...\n");
                     temp_ch[0] = shot_checker + '0';
                     temp_ch[1] = '\0';
-                    send((com_mode) ? mainSocket : acceptSocket, temp_ch, 1, 0);
-                    recv((com_mode) ? mainSocket : acceptSocket, temp_ch, 1, 0);
+                    SEND((com_mode) ? mainSocket : acceptSocket, temp_ch, 1 PARAMETER);
+                    RECEIVE((com_mode) ? mainSocket : acceptSocket, temp_ch, 1 PARAMETER);
                     player = temp_ch[0] - '0';
                     updateCell(boardOne, target);
                 }
@@ -186,8 +187,8 @@ int main() {
                 temp_ch[0] = target.x + 'A';
                 temp_ch[1] = target.y + '0';
                 temp_ch[2] = '\0';
-                send((com_mode) ? mainSocket : acceptSocket, temp_ch, 2, 0);
-                recv((com_mode) ? mainSocket : acceptSocket, temp_ch, 1, 0);
+                SEND((com_mode) ? mainSocket : acceptSocket, temp_ch, 2 PARAMETER);
+                RECEIVE((com_mode) ? mainSocket : acceptSocket, temp_ch, 1 PARAMETER);
                 if(temp_ch[0] - '0' == 0) {
                     boardTwo[target.x][target.y].symbol = MISS;
                     player = !player;
@@ -203,7 +204,7 @@ int main() {
                     temp_ch[0] = !player + '0';
                     temp_ch[1] = '\0';
                 }
-                send((com_mode) ? mainSocket : acceptSocket, temp_ch, 1, 0);
+                SEND((com_mode) ? mainSocket : acceptSocket, temp_ch, 1 PARAMETER);
                 updateCell(boardTwo, target);
             } else if(player == 2) {
                 system(CLEAR);
