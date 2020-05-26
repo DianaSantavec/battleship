@@ -5,23 +5,18 @@
 
 #include "battleship.h"
 
-#define IP "127.0.0.1"
 #define PORT 7777
 #define MAX_NUM_CLIENTS 1
-#define MAX_LEN 1000
+#define MAX_LEN 100
 
 int main() {
 
 #ifdef _WIN32
-    window size = {5 + 4 * COLS + 1, 1 + 2 * (3 + 2 * ROWS + 1) + 3};
+    window size = {5 + 4 * COLS + 1, 1 + 3 + 2 * ROWS + 1 + 3};
     setWindowSize(size.x, size.y);
 
     WSADATA wsa;
 	SOCKET mainSocket, acceptSocket;
-    char ips[100];
-    sprintf(ips, "%s\n", stdout);
-    system("@echo off & for /f \"usebackq tokens=2 delims=:\" %a in (`ipconfig ^| findstr \"IPv4\"`) do echo %a");
-    getchar();
 #endif
 
     srand(time(NULL));
@@ -43,12 +38,14 @@ int main() {
     int shot_checker, number_of_tested_shots = -1; // number_of_tested_shots is for co-op, testing is every field around hit tested
 
     int game_mode = -1, // Stores mode of the game (0 or 1)
-        com_mode = -1,
+        com_mode  = -1,
+        numHits   =  0,
         player,
         temp,           // Stores temporary values
         i, j;           // Counters
 
-    char temp_ch[3];
+    char temp_ch[3],
+         ip[14];
 
     initializeBoard(boardOne);
     initializeBoard(boardTwo);
@@ -84,15 +81,24 @@ int main() {
     sock_addr.sin_port = htons(PORT);
 
     if(com_mode) {
-        sock_addr.sin_addr.s_addr = inet_addr(IP);
+        system(CLEAR);
+        printf("Paste the ip address here: ");
+        scanf("%s", ip);
+        sock_addr.sin_addr.s_addr = inet_addr(ip);
         if(connect(mainSocket, (struct sockaddr*) &sock_addr, sizeof sock_addr) < 0) {
             printf("Connection failed. error: %s\n",WSAGetLastError());
             return 1;
         }
-
-        recv(mainSocket, temp_ch, MAX_LEN, 0);
+        recv(mainSocket, temp_ch, 1, 0);
         player = temp_ch[0] - '0';
     } else {
+        system(CLEAR);
+        printf("> Send this ip address to a client\n> ");
+#ifdef _WIN32
+        system("@echo off & for /f \"tokens=2 delims=:\" %a in ('ipconfig ^| findstr IPv4') do echo %a");
+#else
+        system("ip -4 addr show eth0 | grep -oP '(?<=inet\\s)\\d+(\\.\\d+){3}'");
+#endif
         sock_addr.sin_addr.s_addr = INADDR_ANY;
         if(bind(mainSocket, (struct sockaddr*)&sock_addr, sizeof(sock_addr)) == SOCKET_ERROR) {
             printf("Binding socket on port %d failed.\n", PORT);
@@ -113,7 +119,7 @@ int main() {
         send(acceptSocket, temp_ch, 1, 0);
     }
 
-    printf("Randomly picked player %d.\n", player + 1);
+    printf("> Randomly picked player %d.\n", player + 1);
     getchar();
     getchar();
 
@@ -138,23 +144,23 @@ int main() {
     if(game_mode == PLAYER_VS_COOP) {
         randomShips(boardTwo, ship, &ships_details[0]);
     } else {
-        system(CLEAR);
-        printf("> Place ships:\n");
-        printf("> [1] Manually\n");
-        printf("> [2] Randomly\n");
         do {
+            system(CLEAR);
+            printf("> [1] Place ships manually\n");
+            printf("> [2] Place ships randomly\n");
             printf("> ");
-            scanf("%d", &temp);
-            if(temp == 1) manualShips(boardOne, ship, &ships_details[1]);
-            else if(temp == 2) randomShips(boardOne, ship, &ships_details[1]);
-        } while(temp != 1 && temp != 2);
+            fflush(stdin);
+            scanf("%1[^\n]s", temp_ch);
+            if(temp_ch[0] == '1') manualShips(boardOne, ship, &ships_details[1]);
+            else if(temp_ch[0] == '2') randomShips(boardOne, ship, &ships_details[1]);
+        } while(temp_ch[0] != '1' && temp_ch[0] != '2');
     }
 
     while(true) {
         if(game_mode == PLAYER_VS_COOP) {
 
         } else if(game_mode == PLAYER_V_PLAYER) {
-            if(player) {
+            if(player == 1) {
                 while(player == 1) {
                     system(CLEAR);
                     printf("Enemy playing...\n");
@@ -172,7 +178,7 @@ int main() {
                     player = temp_ch[0] - '0';
                     updateCell(boardOne, target);
                 }
-            } else {
+            } else if(player == 0) {
                 system(CLEAR);
                 printf("It's your move!\n");
                 printBoard(boardTwo, false);
@@ -186,12 +192,27 @@ int main() {
                     boardTwo[target.x][target.y].symbol = MISS;
                     player = !player;
                 } else if(temp_ch[0] - '0' > 0 && temp_ch[0] - '0' < 5) {
+                    numHits++;
                     boardTwo[target.x][target.y].symbol = HIT;
                 }
-                temp_ch[0] = !player + '0';
-                temp_ch[1] = '\0';
+                if(numHits == 20) {
+                    temp_ch[0] = '2';
+                    temp_ch[1] = '\0';
+                    player = 3;
+                } else {
+                    temp_ch[0] = !player + '0';
+                    temp_ch[1] = '\0';
+                }
                 send((com_mode) ? mainSocket : acceptSocket, temp_ch, 1, 0);
                 updateCell(boardTwo, target);
+            } else if(player == 2) {
+                system(CLEAR);
+                printf("You lost! >:(\n");
+                break;
+            } else {
+                system(CLEAR);
+                printf("YOU WON!\n");
+                break;
             }
         }
     }
