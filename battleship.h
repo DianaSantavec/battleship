@@ -47,7 +47,7 @@
     #include <netdb.h>
     #include <netinet/in.h>
 
-    #define CLOSE_SOCKET close()
+    #define CLOSE_SOCKET close
 #else
     #define CLEAR "cls"
     //extended ascii
@@ -79,7 +79,7 @@
     #include <winsock2.h>
     #include <ws2tcpip.h>
 
-    #define CLOSE_SOCKET closesocket(mainSocket); closesocket(acceptSocket); WSACleanup()
+    #define CLOSE_SOCKET closesocket
 
     #pragma comment(lib, "ws2_32.lib") //Winsock Library
 
