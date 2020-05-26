@@ -96,3 +96,21 @@ void manualShips(cell board[][COLS], ShipType ship[NUM_OF_SHIPS], shipDetails sh
 		}
 	}
 }
+
+int isShipSunken(coordinates target, shipDetails ships_details[][COLS],int player){
+    int i,j;
+    //checks every coordinate that contains a ship and decreases number of fields that ship contains 
+    for (i=0;i<NUMBER_OF_SHIPS_IN_TOTAL;i++){
+        for (j=0;j<LONGEST_SHIP;j++){  //actually, it could go to lengt of hitted ship, but tbh, this is easier for implementation and execution time is not so much longer
+            if (ships_details[player][i].all_coordinates[j].x == target.x && ships_details[player][i].all_coordinates[j].y == target.y){
+                ships_details[player][i].number_of_remaining_fields -=1;
+                if (ships_details[player][i].number_of_remaining_fields <= 0){
+                    return 1;
+                }
+                else{
+                    return 0;
+                }
+            }
+        }
+    }
+}

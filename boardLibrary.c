@@ -1,5 +1,6 @@
 #include "battleship.h"
 
+#ifdef _WIN32
 /*
  * Sets window size on Windows to a given width and height
  *
@@ -23,6 +24,8 @@ void setWindowSize(int width, int height) {
 	SetConsoleWindowInfo(handle, TRUE, &rect);
 }
 
+#endif
+
 /*
  * Iterates through all board cells and initializes it's symbol and coordinates
  *
@@ -45,7 +48,6 @@ void initializeBoard(cell board[][COLS]) {
 		}
     }
 }
-
 /*
  * Prints out a given board
  *

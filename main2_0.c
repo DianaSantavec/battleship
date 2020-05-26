@@ -1,7 +1,9 @@
+#ifdef _WIN32
 #include "boardLibrary.c"
 #include "computerLogic.c"
 #include "coordinatesFunctions.c"
 #include "shipsFunctions.c"
+#endif
 
 #include "battleship.h"
 
@@ -47,6 +49,8 @@ int main() {
 
     char temp_ch[3],
          ip[14];
+
+    stackElement *stack;
 
     initializeBoard(boardOne);
     initializeBoard(boardTwo);
@@ -137,14 +141,16 @@ int main() {
             }
         } while(game_mode == -1);
         SEND(acceptSocket, temp_ch, 1 PARAMETER);
-    } else {
+    }
+    else {
         RECEIVE(mainSocket, temp_ch, 1 PARAMETER);
         game_mode = temp_ch[0] - '1';
     }
 
     if(game_mode == PLAYER_VS_COOP) {
         randomShips(boardTwo, ship, &ships_details[0]);
-    } else {
+    }
+    else {
         do {
             system(CLEAR);
             printf("> [1] Place ships manually\n");
@@ -160,7 +166,8 @@ int main() {
     while(true) {
         if(game_mode == PLAYER_VS_COOP) {
 
-        } else if(game_mode == PLAYER_V_PLAYER) {
+        }
+        else if(game_mode == PLAYER_V_PLAYER) {
             if(player == 1) {
                 while(player == 1) {
                     system(CLEAR);
@@ -216,10 +223,71 @@ int main() {
                 break;
             }
         }
+
+        else{
+            system(CLEAR);
+            printf("Computers turn:\n");
+
+            if (stack == NULL){ //if last shot was a miss due a random shot do random shot again
+                do {
+            		target.x = rand() % 10;
+              		target.y = rand() % 10;
+               		shot_checker = checkShot(boardOne, target);
+               	} while(shot_checker == -1);
+
+                if (shot_checker != -1 && shot_checker != 0) { // if a ship is hit
+                    stack = Push(stack,target,-1);     //remember coordinates on stack, -1 because no more fields are tested around hit
+                }
+
+                    updateCell(boardOne, target);
+            }
+
+            else {
+                target = tryEveryDirection(boardOne, &stack);
+                shot_checker = checkShot(boardOne,target);
+                updateCell(boardOne, target);
+            }
+
+            printBoard(boardOne, true);
+
+            if(shot_checker != -1 && shot_checker != 0) {
+                printf("> %c%c is a hit!\n", target.x + 'A', target.y + '0');
+                if (isShipSunken(target,ships_details,player)){
+                    printf("> you sank the ");
+                    switch (shot_checker){
+                        case 1:
+                            printf("nosac aviona");  //I don't know translations
+                            break;
+                        case 2:
+                            printf ("krstarica");
+                            break;
+                        case 3:
+                            printf("razarac");
+                            break;
+                        case 4:
+                            printf("submarine");
+                            break;
+                    }
+                    printf("!\n");
+                    //if ship is sunken and if game is vs co-op remove field from the stack
+                    stack = Pop(stack);
+                }
+            }
+            else{
+                printf("> %c%c is a miss!\n", target.x + 'A', target.y + '0');
+            }
+
+            fflush(stdin);
+            getchar();
+            getchar();
+        }
+
+        
     }
 
-    closesocket(mainSocket);
-    closesocket(acceptSocket);
-    WSACleanup();
+    #ifdef _WIN32
+        CLOSE_SOCKET;
+    #endif
+
     return 0;
 }

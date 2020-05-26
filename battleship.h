@@ -46,6 +46,8 @@
 
     #include <netdb.h>
     #include <netinet/in.h>
+
+    #define CLOSE_SOCKET close()
 #else
     #define CLEAR "cls"
     //extended ascii
@@ -76,6 +78,8 @@
     #include <Windows.h>
     #include <winsock2.h>
     #include <ws2tcpip.h>
+
+    #define CLOSE_SOCKET closesocket(mainSocket); closesocket(acceptSocket); WSACleanup()
 
     #pragma comment(lib, "ws2_32.lib") //Winsock Library
 
@@ -151,6 +155,12 @@ typedef struct {
     int number_of_remaining_fields;
 } shipDetails;
 
+typedef struct element{
+    coordinates coordinate;
+    int number_of_tested_shots;
+    struct element *next;
+}stackElement;
+
 void printBoard(cell board[][COLS], bool);
 void initializeBoard(cell board[][COLS]);
 void putShipOnBoard(cell boardoard[][COLS], coordinates, int, ShipType);
@@ -162,5 +172,13 @@ coordinates inputCoordinate();
 int checkShot(cell board[][COLS], coordinates);
 void updateCell (cell board[][COLS], coordinates);
 
-int tryEveryDirection(cell playersBoard[][COLS], coordinates *target, int *number_of_tested_shots);
+coordinates tryEveryDirection(cell board[][COLS], stackElement **stack);
+
+stackElement *Push(stackElement *stack, coordinates new_coordinates, int number_of_tested_shots);
+stackElement * Pop(stackElement *stack);
+const stackElement *Top(const stackElement *stack);
+void Free(stackElement *stack);
+int isEmpty(stackElement *stack);
+
+int isShipSunken(coordinates target, shipDetails ships_details[][COLS],int player);
 #endif
