@@ -6,7 +6,7 @@
 #include "stack.c"
 #endif
 
-#endif
+//#endif
 
 #include "battleship.h"
 
