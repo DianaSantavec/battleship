@@ -47,7 +47,7 @@ int main() {
     int game_mode  = -1, // Stores mode of the game (0 or 1)
         com_mode   = -1, // Communication mode (1 - client, 0 - server)
         numHits[2] = {0}, // Number of hits
-        player,         // Current player
+        player = rand() % 2,         // Current player
         temp,           // Stores temporary values
         i, j;           // Counters
 
@@ -178,7 +178,6 @@ int main() {
         if(temp_ch[0] == '1') manualShips(boardOne, ship, &ships_details[1]);
         else if(temp_ch[0] == '2') randomShips(boardOne, ship, &ships_details[1]);
     } while(temp_ch[0] != '1' && temp_ch[0] != '2');
-
     // Game start
     while(true) {
         if(game_mode == PLAYER_VS_COOP) {
@@ -215,10 +214,10 @@ int main() {
                 }
                 printBoard(boardOne, true);
             }
-
         if(shot_checker != -1 && shot_checker != 0) {
+            numHits[player]++;
             printf("> %c%c is a hit!\n", target.x + 'A', target.y + '0');
-            //checks every coordinate that contains a ship and decreases number of fields that ship contains 
+            //checks every coordinate that contains a ship and decreases number of fields that ship contains
             for (i=0;i<NUMBER_OF_SHIPS_IN_TOTAL;i++){
                 for (j=0;j<LONGEST_SHIP;j++){  //actually, it could go to lengt of hitted ship, but tbh, this is easier for implementation and execution time is not so much longer
                     if (ships_details[player][i].all_coordinates[j].x == target.x && ships_details[player][i].all_coordinates[j].y == target.y){
@@ -244,13 +243,10 @@ int main() {
                                 stack = Pop(stack);
                             }
                         }
-                    break;
                     }
-                    printf("!\n");
-                    //if ship is sunken and if game is vs co-op remove field from the stack
-                    stack = Pop(stack);
                 }
             }
+        }
             else{
                 // If missed, reverse players
                 printf("> %c%c is a miss!\n", target.x + 'A', target.y + '0');
@@ -273,27 +269,23 @@ int main() {
         else if(game_mode == PLAYER_V_PLAYER) {
             if(player == 1) {
                 // While you aren't playing
-                while(player == 1) {
-                    system(CLEAR);
-                    printf("Enemy playing...\n");
-                    // Display your board
-                    printBoard(boardOne, true);
-                    // Receive new target and check for hits
-                    RECEIVE((com_mode) ? mainSocket : acceptSocket, temp_ch, 2 PARAMETER);
-                    target.x = temp_ch[0] - 'A';
-                    target.y = temp_ch[1] - '0';
-                    shot_checker = checkShot(boardOne, target);
-                    if(shot_checker == 0) printf("He missed! :)\n");
-                    else printf("We got hit...\n");
-                    // Send whether you're hit or not
-                    temp_ch[0] = shot_checker + '0';
-                    temp_ch[1] = '\0';
-                    SEND((com_mode) ? mainSocket : acceptSocket, temp_ch, 1 PARAMETER);
-                    // Receive who's playing next
-                    RECEIVE((com_mode) ? mainSocket : acceptSocket, temp_ch, 1 PARAMETER);
-                    player = temp_ch[0] - '0';
-                    updateCell(boardOne, target);
-                }
+                system(CLEAR);
+                printf("Enemy playing...\n");
+                // Display your board
+                printBoard(boardOne, true);
+                // Receive new target and check for hits
+                RECEIVE((com_mode) ? mainSocket : acceptSocket, temp_ch, 2 PARAMETER);
+                target.x = temp_ch[0] - 'A';
+                target.y = temp_ch[1] - '0';
+                shot_checker = checkShot(boardOne, target);
+                // Send whether you're hit or not
+                temp_ch[0] = shot_checker + '0';
+                temp_ch[1] = '\0';
+                SEND((com_mode) ? mainSocket : acceptSocket, temp_ch, 1 PARAMETER);
+                // Receive who's playing next
+                RECEIVE((com_mode) ? mainSocket : acceptSocket, temp_ch, 1 PARAMETER);
+                player = temp_ch[0] - '0';
+                updateCell(boardOne, target);
             } else if(player == 0) {
                 // If you are playing
                 system(CLEAR);
@@ -338,6 +330,13 @@ int main() {
             }
         }
     }
-    Free(stack);
+
+    if(game_mode == PLAYER_V_PLAYER) {
+        CLOSE_SOCKET(mainSocket);
+        CLOSE_SOCKET(acceptSocket);
+#ifdef _WIN32
+        WSACleanup();
+#endif
+    } else Free(stack);
     return 0;
 }
