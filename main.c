@@ -6,8 +6,6 @@
 #include "stack.c"
 #endif
 
-//#endif
-
 #include "battleship.h"
 
 #define PORT 7777           // Port number
@@ -52,7 +50,7 @@ int main() {
         i, j;           // Counters
 
     char temp_ch[3],    // Used for sending 1 or 2 byte data between computers
-         ip[14];        // Stores ip address
+         ip[16];        // Stores ip address
 
     stackElement *stack = NULL, *element; //pointer to top of a stack for co-op
 
@@ -214,60 +212,9 @@ int main() {
                 }
                 printBoard(boardOne, true);
             }
-        if(shot_checker != -1 && shot_checker != 0) {
-            numHits[player]++;
-            printf("> %c%c is a hit!\n", target.x + 'A', target.y + '0');
-            //checks every coordinate that contains a ship and decreases number of fields that ship contains
-            for (i=0;i<NUMBER_OF_SHIPS_IN_TOTAL;i++){
-                for (j=0;j<LONGEST_SHIP;j++){  //actually, it could go to lengt of hitted ship, but tbh, this is easier for implementation and execution time is not so much longer
-                    if (ships_details[player][i].all_coordinates[j].x == target.x && ships_details[player][i].all_coordinates[j].y == target.y){
-                        ships_details[player][i].number_of_remaining_fields -=1;
-                        if (ships_details[player][i].number_of_remaining_fields <= 0){
-                            printf("> you sank the ");
-                            switch (shot_checker){
-                                case 1:
-                                    printf("nosac aviona");  //I don't know translations
-                                    break;
-                                case 2:
-                                    printf ("krstarica");
-                                    break;
-                                case 3:
-                                    printf("razarac");
-                                    break;
-                                case 4:
-                                    printf("submarine");
-                                    break;
-                            }
-                            printf("!\n");
-                            if (game_mode == PLAYER_VS_COOP && player == PLAYER2){  //if ship is sunken and if game is vs co-op remove field from the stack
-                                stack = Pop(stack);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-            else{
-                // If missed, reverse players
-                printf("> %c%c is a miss!\n", target.x + 'A', target.y + '0');
-                player = !player;
-            }
-
-            // Check if the game ended
-            if(numHits[PLAYER1] == 20) {
-                system(CLEAR);
-                printf("You won!\n");
-                break;
-            } else if(numHits[PLAYER2] == 20) {
-                system(CLEAR);
-                printf("You lost!\n");
-                break;
-            }
-            getchar();
-            getchar();
         }
         else if(game_mode == PLAYER_V_PLAYER) {
-            if(player == 1) {
+            if(player == PLAYER2) {
                 // While you aren't playing
                 system(CLEAR);
                 printf("Enemy playing...\n");
@@ -278,15 +225,12 @@ int main() {
                 target.x = temp_ch[0] - 'A';
                 target.y = temp_ch[1] - '0';
                 shot_checker = checkShot(boardOne, target);
+                updateCell(boardOne, target);
                 // Send whether you're hit or not
                 temp_ch[0] = shot_checker + '0';
                 temp_ch[1] = '\0';
                 SEND((com_mode) ? mainSocket : acceptSocket, temp_ch, 1 PARAMETER);
-                // Receive who's playing next
-                RECEIVE((com_mode) ? mainSocket : acceptSocket, temp_ch, 1 PARAMETER);
-                player = temp_ch[0] - '0';
-                updateCell(boardOne, target);
-            } else if(player == 0) {
+            } else if(player == PLAYER1) {
                 // If you are playing
                 system(CLEAR);
                 printf("It's your move!\n");
@@ -301,34 +245,49 @@ int main() {
                 SEND((com_mode) ? mainSocket : acceptSocket, temp_ch, 2 PARAMETER);
                 // Receive whether it's a hit or not and do the required checks
                 RECEIVE((com_mode) ? mainSocket : acceptSocket, temp_ch, 1 PARAMETER);
-                if(temp_ch[0] - '0' == 0) {
-                    boardTwo[target.x][target.y].symbol = MISS;
-                    player = !player;
-                } else if(temp_ch[0] - '0' > 0 && temp_ch[0] - '0' < 5) {
-                    numHits[0]++;
-                    boardTwo[target.x][target.y].symbol = HIT;
-                }
-                // Check if the game is over
-                if(numHits[0] == 20) {
-                    temp_ch[0] = '2'; // Player = 2 used to tell the other computer that he lost
-                    temp_ch[1] = '\0';
-                    player = 3; // Player = 3 used to tell this computer that he won
-                } else {
-                    temp_ch[0] = !player + '0';
-                    temp_ch[1] = '\0';
-                }
-                SEND((com_mode) ? mainSocket : acceptSocket, temp_ch, 1 PARAMETER);
-                updateCell(boardTwo, target);
-            } else if(player == 2) {
-                system(CLEAR);
-                printf("You lost! >:(\n");
-                break;
-            } else {
-                system(CLEAR);
-                printf("YOU WON!\n");
-                break;
+                shot_checker = temp_ch[0] - '0';
+                if(shot_checker == 0) boardTwo[target.x][target.y].symbol = MISS;
+                else if(shot_checker > 0 && shot_checker < 5) boardTwo[target.x][target.y].symbol = HIT;
             }
         }
+
+        if(shot_checker == 0) {
+            printf("> Miss!\n");
+            player = !player;
+        } else if(shot_checker > 0 && shot_checker < 5) {
+            printf("> Hit!\n");
+            numHits[player]++;
+            if(isShipSunken(target, ships_details, player)) {
+                switch(shot_checker) {
+                    case 1:
+                        printf("Nosac aviona");  //I don't know translations
+                        break;
+                    case 2:
+                        printf("Krstarica");
+                        break;
+                    case 3:
+                        printf("Razarac");
+                        break;
+                    case 4:
+                        printf("Podmornica");
+                        break;
+                }
+                printf(" potopljeno!\n");
+            }
+            if(player == PLAYER2) stack = Pop(stack);
+        }
+        // Check if the game ended
+        if(numHits[PLAYER1] == 20) {
+            system(CLEAR);
+            printf("You won!\n");
+            break;
+        } else if(numHits[PLAYER2] == 20) {
+            system(CLEAR);
+            printf("You lost!\n");
+            break;
+        }
+        getchar();
+        getchar();
     }
 
     if(game_mode == PLAYER_V_PLAYER) {
