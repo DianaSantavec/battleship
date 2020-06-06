@@ -65,8 +65,8 @@ int main() {
         printf("> [1] Player vs CO-OP\n");
         printf("> [2] Player vs Player\n");
         printf("> ");
-        fflush(stdin);
         scanf("%1[^\n]s", temp_ch);
+        while ((getchar()) != '\n'); //fflush
         if(temp_ch[0] == '1' || temp_ch[0] == '2') {
             game_mode = temp_ch[0] - '1';
         }
@@ -88,8 +88,8 @@ int main() {
             printf("> [1] Server\n");
             printf("> [2] Client\n");
             printf("> ");
-            fflush(stdin);
             scanf("%1[^\n]s", temp_ch);
+            while ((getchar()) != '\n');    //fflush
             if(temp_ch[0] == '1' || temp_ch[0] == '2') {
                 com_mode = temp_ch[0] - '1';
             }
@@ -120,6 +120,7 @@ int main() {
             system(CLEAR);
             printf("Paste the ip address here: ");
             scanf("%s", ip);
+            while ((getchar()) != '\n');
             // inet_addr() function converts given string in a proper IP address
             sock_addr.sin_addr.s_addr = inet_addr(ip);
             // Establishe a connection to a specified socket.
@@ -171,8 +172,8 @@ int main() {
         printf("> [1] Place ships manually\n");
         printf("> [2] Place ships randomly\n");
         printf("> ");
-        fflush(stdin);
         scanf("%1[^\n]s", temp_ch);
+        while ((getchar()) != '\n');    //fflush
         if(temp_ch[0] == '1') manualShips(boardOne, ship, &ships_details[1]);
         else if(temp_ch[0] == '2') randomShips(boardOne, ship, &ships_details[1]);
     } while(temp_ch[0] != '1' && temp_ch[0] != '2');
@@ -286,7 +287,6 @@ int main() {
             printf("You lost!\n");
             break;
         }
-        getchar();
         getchar();
     }
 

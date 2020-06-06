@@ -16,10 +16,11 @@ coordinates inputCoordinate() {
     temp[0] = 0;
     do {
         if(temp[0]) printf("> Try again\n");
-    	fflush (stdin);
+    	//fflush (stdin);
     	printf ("> Enter field(ex. A8):\n");
     	printf ("> ");
     	scanf ("%2s", temp);
+		while ((getchar()) != '\n');
         // Format first character
         temp[0] = toupper(temp[0]) - 'A';
         // If wrong input, return to the beginning.
